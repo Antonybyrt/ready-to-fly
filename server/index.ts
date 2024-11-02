@@ -17,7 +17,7 @@ app.use('/flights', swapController.buildRoutes());
 app.use('/airports', airportController.buildRoutes());
 
 sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`listening on port 3000`);
+  app.listen(3001, () => {
+    console.log(`listening on port 3001`);
   });
 }).catch((error) => console.error('Error connecting to database', error));
