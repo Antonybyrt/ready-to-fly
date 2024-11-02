@@ -61,6 +61,7 @@ export class FlightController {
         router.get('/:id', this.getFlightById.bind(this));
         router.post('/', express.json(), this.createFlight.bind(this));
         router.put('/:id', express.json(), this.updateFlight.bind(this));
+        router.delete('/:id', this.deleteFlight.bind(this));
         return router;
     }
 }
