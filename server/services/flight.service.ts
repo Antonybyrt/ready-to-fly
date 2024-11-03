@@ -1,4 +1,4 @@
-import { Flight } from '../models';
+import { Airport, Flight } from '../models';
 import { ServiceResult } from './service.result';
 import { Optional } from 'sequelize';
 
@@ -15,7 +15,20 @@ export class FlightService {
 
     async getAllFlights(): Promise<ServiceResult<Flight[]>> {
         try {
-            const flights = await Flight.findAll();
+            const flights = await Flight.findAll({
+                include: [
+                    {
+                        model: Airport,
+                        as: 'departureAirport',
+                        attributes: ['name', 'short_form']
+                    },
+                    {
+                        model: Airport,
+                        as: 'arrivalAirport',
+                        attributes: ['name', 'short_form']
+                    }
+                ]
+            });
             return ServiceResult.success(flights);
         } catch (error) {
             console.error('Error fetching flights:', error);
@@ -25,7 +38,20 @@ export class FlightService {
 
     async getFlightById(id: number): Promise<ServiceResult<Flight>> {
         try {
-            const flight = await Flight.findByPk(id);
+            const flight = await Flight.findByPk(id, {
+                include: [
+                    {
+                        model: Airport,
+                        as: 'departureAirport',
+                        attributes: ['name', 'short_form']
+                    },
+                    {
+                        model: Airport,
+                        as: 'arrivalAirport',
+                        attributes: ['name', 'short_form']
+                    }
+                ]
+            });
             if (flight) {
                 return ServiceResult.success(flight);
             } else {
@@ -63,6 +89,17 @@ export class FlightService {
             }
         } catch (error) {
             console.error('Error deleting flight:', error);
+            return ServiceResult.failed();
+        }
+    }
+
+    async countFlights(): Promise<ServiceResult<number>> {
+        try {
+            console.log('here')
+            const count = await Flight.count();
+            return ServiceResult.success(count);
+        } catch (error) {
+            console.error('Error counting flights:', error);
             return ServiceResult.failed();
         }
     }

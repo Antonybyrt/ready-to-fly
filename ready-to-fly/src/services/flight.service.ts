@@ -71,6 +71,19 @@ export class FlightService {
         }
     }
 
+    static async countFlights(): Promise<ServiceResult<number>> {
+        try {
+            const res = await axios.get(`${ApiService.baseURL}/flights/count`);
+            if (res.status === 200) {
+                return ServiceResult.success(res.data)
+            }
+            return ServiceResult.failed();
+        } catch (err) {
+            console.log(err)
+            return ServiceResult.failed();
+        }
+    }
+
 
 
 }

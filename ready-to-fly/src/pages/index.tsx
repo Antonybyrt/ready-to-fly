@@ -1,103 +1,162 @@
-import Image from "next/image";
+import { useEffect, useState } from 'react';
+import { Line } from 'react-chartjs-2';
+import { FlightService } from '@/services/flight.service';
+import { IFlight } from '@/models/flight.model';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { ServiceErrorCode } from '@/services/service.result';
+import { ErrorService } from '@/services/error.service';
 
-export default function Home() {
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+
+const Dashboard = () => {
+  const [flightCount, setFlightCount] = useState<number>(0);
+  const [nextFlight, setNextFlight] = useState<IFlight | null>(null);
+  const [mostPopularDestination, setMostPopularDestination] = useState<string>('');
+  const [monthlyFlightData, setMonthlyFlightData] = useState<any>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear()); // Année sélectionnée
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      const flightCountResult = await FlightService.countFlights();
+      const flightsResult = await FlightService.getAllFlights();
+
+      if (flightCountResult.errorCode === ServiceErrorCode.success) {
+        setFlightCount(flightCountResult.result?.count);
+      } else {
+        ErrorService.errorMessage('Counting flights', 'error while counting flights');
+      }
+
+      if (flightsResult.errorCode === ServiceErrorCode.success) {
+        const flights = flightsResult.result as IFlight[];
+
+        const upcomingFlights = flights.filter(flight => new Date(flight.start_date) > new Date());
+        if (upcomingFlights.length > 0) {
+          const next = upcomingFlights.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())[0];
+          setNextFlight(next);
+        }
+
+        const destinationCounts: { [key: string]: number } = {};
+        flights.forEach(flight => {
+          destinationCounts[flight.arrivalAirport?.name + ` (${flight.arrivalAirport?.short_form})`] = (destinationCounts[flight.arrivalAirport?.name as string] || 0) + 1;
+        });
+        const mostPopularDest = Object.keys(destinationCounts).reduce((a, b) => destinationCounts[a] > destinationCounts[b] ? a : b, '');
+        setMostPopularDestination(mostPopularDest);
+
+        const monthlyData = new Array(12).fill(0);
+        flights.forEach(flight => {
+          const flightDate = new Date(flight.start_date);
+          if (flightDate.getFullYear() === selectedYear) {
+            const month = flightDate.getMonth();
+            monthlyData[month]++;
+          }
+        });
+        
+        setMonthlyFlightData({
+          labels: Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'short' })),
+          datasets: [{
+            label: `Flight(s) in ${selectedYear}`,
+            data: monthlyData,
+            fill: false,
+            borderColor: '#4CAF50',
+            tension: 0.1,
+          }]
+        });
+      } else {
+        ErrorService.errorMessage('Fetching flights', 'error while fetching flights');
+      }
+    };
+
+    fetchStatistics();
+  }, [selectedYear]);
+
   return (
-    <div
-      
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="p-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-green-500 p-4 rounded shadow">
+          <h2 className="text-lg font-bold">Total Flights</h2>
+          <div className="bg-green-500 text-white p-4 rounded text-center">
+            <p className="text-xl">{flightCount}</p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div className="bg-blue-500 p-4 rounded shadow">
+          <h2 className="text-lg font-bold">Next Flight</h2>
+          <div className="bg-blue-500 text-white p-4 rounded text-center">
+            {nextFlight ? (
+              <p className="text-xl">{nextFlight.arrivalAirport?.name} ({nextFlight.arrivalAirport?.short_form}) at {new Date(nextFlight.start_date).toLocaleString()}</p>
+            ) : (
+              <p className="text-xl">No upcoming flights</p>
+            )}
+          </div>
+        </div>
+        <div className="bg-orange-500 p-4 rounded shadow">
+          <h2 className="text-lg font-bold">Most Popular Destination</h2>
+          <div className="bg-orange-500 text-white p-4 rounded text-center">
+            <p className="text-xl">{mostPopularDestination}</p>
+          </div>
+        </div>
+      </div>
+
+      <br />
+
+      <h2 className="text-lg font-bold">Monthly Flights</h2>
+
+      {monthlyFlightData && (
+        <div>
+          <Line
+            data={monthlyFlightData} 
+            options={{
+              maintainAspectRatio: false,
+              elements: {
+                line: {
+                  borderWidth: 2,
+                  borderColor: '#4CAF50',
+                  tension: 0.4,
+                },
+                point: {
+                  radius: 4,
+                  backgroundColor: '#4CAF50',
+                  borderColor: '#ffffff',
+                  borderWidth: 2,
+                },
+              },
+              plugins: {
+                legend: {
+                  display: true,
+                  position: 'top',
+                },
+                tooltip: {
+                  enabled: true, 
+                },
+              },
+            }} 
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        </div>
+      )}
+      <br></br>
+      <div className="mb-4">
+        {/* Sélecteur d'année */}
+        <select
+          id="yearSelect"
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(Number(e.target.value))}
+          className="p-2 border rounded text-black"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {/* Créez une plage d'années pour le sélecteur */}
+          {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() + i).map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))}
+        </select>
+      </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

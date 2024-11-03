@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize';
 import sequelize from '../config/database.config';
 import { Airport } from './airport.model';
 
@@ -10,6 +10,9 @@ export class Flight extends Model {
     public start_date!: Date;
     public end_date!: Date;
     public appreciation?: string;
+
+    public getDepartureAirport!: BelongsToGetAssociationMixin<Airport>;
+    public getArrivalAirport!: BelongsToGetAssociationMixin<Airport>;
 }
 
 Flight.init({
@@ -57,3 +60,6 @@ Flight.init({
     tableName: 'flights',
     timestamps: false
 });
+
+Flight.belongsTo(Airport, { foreignKey: 'departure_id', as: 'departureAirport' });
+Flight.belongsTo(Airport, { foreignKey: 'arrival_id', as: 'arrivalAirport' });

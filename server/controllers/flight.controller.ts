@@ -55,9 +55,18 @@ export class FlightController {
         return res.status(500).json({ message: 'Error deleting flight' });
     }
 
+    async countFlights(req: Request, res: Response) {
+        const serviceResult = await flightService.countFlights();
+        if (serviceResult.errorCode === ServiceErrorCode.success) {
+            return res.status(200).json({ count: serviceResult.result });
+        }
+        return res.status(500).json({ message: 'Error counting flights' });
+    }
+
     buildRoutes(): Router {
         const router = express.Router();
         router.get('/', this.getAllFlights.bind(this));
+        router.get('/count', this.countFlights.bind(this));
         router.get('/:id', this.getFlightById.bind(this));
         router.post('/', express.json(), this.createFlight.bind(this));
         router.put('/:id', express.json(), this.updateFlight.bind(this));
