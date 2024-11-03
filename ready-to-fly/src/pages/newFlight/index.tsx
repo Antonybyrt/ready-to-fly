@@ -13,12 +13,14 @@ const NewFlight = () => {
     const [duration, setDuration] = useState('');
     const [startDate, setStartDate] = useState('');
     const [appreciation, setAppreciation] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newAirportName, setNewAirportName] = useState('');
+    const [newAirportShortForm, setNewAirportShortForm] = useState('');
     const router = useRouter();
 
     useEffect(() => {
         const fetchAirports = async () => {
             const result = await AirportService.getAllAirports();
-            console.log(result)
             if (result.errorCode === ServiceErrorCode.success && result.result) {
                 setAirports(result.result);
             } else {
@@ -50,6 +52,27 @@ const NewFlight = () => {
         }
     };
 
+    const handleAddAirport = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const airportData = {
+            name: newAirportName,
+            short_form: newAirportShortForm,
+        };
+
+        try {
+            const result = await AirportService.createAirport(airportData);
+            if (result.errorCode === ServiceErrorCode.success) {
+                setAirports((prev) => [...prev, result.result]); // Ajoute le nouvel aéroport à la liste
+                ErrorService.successMessage('Airport added!', '');
+                setIsModalOpen(false); // Ferme la modale
+                setNewAirportName(''); // Réinitialise le champ
+                setNewAirportShortForm(''); // Réinitialise le champ
+            }
+        } catch (err) {
+            ErrorService.errorMessage('Failed to add airport', '' + err);
+        }
+    };
+
     return (
         <div className="max-w-md mx-auto mt-10">
             <h1 className="text-2xl font-bold text-center">Create a New Flight</h1>
@@ -73,6 +96,13 @@ const NewFlight = () => {
                             </option>
                         ))}
                     </select>
+                    {/* Badge to open modal */}
+                    <div
+                        onClick={() => setIsModalOpen(true)}
+                        className="mt-2 inline-block bg-blue-600 text-white py-1 px-2 rounded cursor-pointer"
+                    >
+                        Add Airport
+                    </div>
                 </div>
 
                 {/* Arrival Airport Select Box */}
@@ -145,6 +175,51 @@ const NewFlight = () => {
                     Create Flight
                 </button>
             </form>
+
+            {/* Modal for Adding Airport */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-md shadow-md">
+                        <h2 className="text-xl font-bold mb-4">Add Airport</h2>
+                        <form onSubmit={handleAddAirport} className="space-y-4">
+                            <div>
+                                <label htmlFor="newAirportName" className="block text-sm font-medium text-gray-700">
+                                    Airport Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="newAirportName"
+                                    value={newAirportName}
+                                    onChange={(e) => setNewAirportName(e.target.value)}
+                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="newAirportShortForm" className="block text-sm font-medium text-gray-700">
+                                    Short Form
+                                </label>
+                                <input
+                                    type="text"
+                                    id="newAirportShortForm"
+                                    value={newAirportShortForm}
+                                    onChange={(e) => setNewAirportShortForm(e.target.value)}
+                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded-md">
+                                    Cancel
+                                </button>
+                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md">
+                                    Add Airport
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
