@@ -4,7 +4,10 @@ import { FlightService } from '@/services/flight.service';
 import { AirportService } from '@/services/airport.service';
 import { ErrorService } from '@/services/error.service';
 import { ServiceErrorCode } from '@/services/service.result';
-import { IAirport, IAirportId } from '@/models/airport.model';
+import { IAirportId } from '@/models/airport.model';
+import AddAirport from '@/components/modals/AddAirport';
+import RemoveAirportModal from '@/components/modals/RemoveAirport';
+
 
 const NewFlight = () => {
     const [airports, setAirports] = useState<IAirportId[]>([]);
@@ -13,9 +16,11 @@ const NewFlight = () => {
     const [duration, setDuration] = useState('');
     const [startDate, setStartDate] = useState('');
     const [appreciation, setAppreciation] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [newAirportName, setNewAirportName] = useState('');
     const [newAirportShortForm, setNewAirportShortForm] = useState('');
+    const [airportToDelete, setAirportToDelete] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -32,15 +37,26 @@ const NewFlight = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+    
+        const startDateTime = new Date(startDate);
+        
+        const durationStr = duration.padStart(4, '0');
+        const hours = Number(durationStr.slice(0, -2));
+        const minutes = Number(durationStr.slice(-2));
+    
+        const endDate = new Date(startDateTime);
+        endDate.setHours(startDateTime.getHours() + hours);
+        endDate.setMinutes(startDateTime.getMinutes() + minutes);
+    
         const flightData = {
             departure_id: Number(departureId),
             arrival_id: Number(arrivalId),
             duration: Number(duration),
-            start_date: new Date(startDate),
-            end_date: new Date(new Date(startDate).getTime() + Number(duration) * 60 * 60 * 1000),
+            start_date: startDateTime,
+            end_date: endDate,
             appreciation,
         };
-
+    
         try {
             const result = await FlightService.createFlight(flightData);
             if (result.errorCode === ServiceErrorCode.success) {
@@ -51,6 +67,7 @@ const NewFlight = () => {
             ErrorService.errorMessage('Creation failed', '' + err);
         }
     };
+    
 
     const handleAddAirport = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,14 +79,29 @@ const NewFlight = () => {
         try {
             const result = await AirportService.createAirport(airportData);
             if (result.errorCode === ServiceErrorCode.success) {
-                setAirports((prev) => [...prev, result.result]); // Ajoute le nouvel aéroport à la liste
+                setAirports((prev) => [...prev, result.result]);
                 ErrorService.successMessage('Airport added!', '');
-                setIsModalOpen(false); // Ferme la modale
-                setNewAirportName(''); // Réinitialise le champ
-                setNewAirportShortForm(''); // Réinitialise le champ
+                setIsAddModalOpen(false);
+                setNewAirportName('');
+                setNewAirportShortForm('');
             }
         } catch (err) {
             ErrorService.errorMessage('Failed to add airport', '' + err);
+        }
+    };
+
+    const handleDeleteAirport = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const result = await AirportService.deleteFlight(airportToDelete);
+            if (result.errorCode === ServiceErrorCode.success) {
+                setAirports((prev) => prev.filter((airport) => airport.id !== airportToDelete));
+                ErrorService.successMessage('Airport deleted!', '');
+                setIsDeleteModalOpen(false);
+                setAirportToDelete('');
+            }
+        } catch (err) {
+            ErrorService.errorMessage('Failed to delete airport', '' + err);
         }
     };
 
@@ -96,13 +128,6 @@ const NewFlight = () => {
                             </option>
                         ))}
                     </select>
-                    {/* Badge to open modal */}
-                    <div
-                        onClick={() => setIsModalOpen(true)}
-                        className="mt-2 inline-block bg-blue-600 text-white py-1 px-2 rounded cursor-pointer"
-                    >
-                        Add Airport
-                    </div>
                 </div>
 
                 {/* Arrival Airport Select Box */}
@@ -176,49 +201,33 @@ const NewFlight = () => {
                 </button>
             </form>
 
-            {/* Modal for Adding Airport */}
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-md shadow-md">
-                        <h2 className="text-xl font-bold mb-4">Add Airport</h2>
-                        <form onSubmit={handleAddAirport} className="space-y-4">
-                            <div>
-                                <label htmlFor="newAirportName" className="block text-sm font-medium text-gray-700">
-                                    Airport Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="newAirportName"
-                                    value={newAirportName}
-                                    onChange={(e) => setNewAirportName(e.target.value)}
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="newAirportShortForm" className="block text-sm font-medium text-gray-700">
-                                    Short Form
-                                </label>
-                                <input
-                                    type="text"
-                                    id="newAirportShortForm"
-                                    value={newAirportShortForm}
-                                    onChange={(e) => setNewAirportShortForm(e.target.value)}
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                                    required
-                                />
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded-md">
-                                    Cancel
-                                </button>
-                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md">
-                                    Add Airport
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div onClick={() => setIsAddModalOpen(true)} className="mt-2 text-sm inline-block bg-green-600 text-white py-1 px-2 rounded cursor-pointer">
+                Add Airport
+            </div>
+            <div onClick={() => setIsDeleteModalOpen(true)} className="mt-2 ml-2 text-sm inline-block bg-red-600 text-white py-1 px-2 rounded cursor-pointer">
+                Delete Airport
+            </div>
+
+            {/* Modals */}
+            {isAddModalOpen && (
+                <AddAirport
+                    newAirportName={newAirportName}
+                    newAirportShortForm={newAirportShortForm}
+                    setNewAirportName={setNewAirportName}
+                    setNewAirportShortForm={setNewAirportShortForm}
+                    handleAddAirport={handleAddAirport}
+                    closeModal={() => setIsAddModalOpen(false)}
+                />
+            )}
+
+            {isDeleteModalOpen && (
+                <RemoveAirportModal
+                    airports={airports}
+                    airportToDelete={airportToDelete}
+                    setAirportToDelete={setAirportToDelete}
+                    handleDeleteAirport={handleDeleteAirport}
+                    closeModal={() => setIsDeleteModalOpen(false)}
+                />
             )}
         </div>
     );
