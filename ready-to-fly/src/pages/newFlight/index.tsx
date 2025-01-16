@@ -79,7 +79,7 @@ const NewFlight = () => {
         try {
             const result = await AirportService.createAirport(airportData);
             if (result.errorCode === ServiceErrorCode.success) {
-                setAirports((prev) => [...prev, result.result]);
+                setAirports((prev) => [...prev, result.result as IAirportId]);
                 ErrorService.successMessage('Airport added!', '');
                 setIsAddModalOpen(false);
                 setNewAirportName('');
@@ -93,9 +93,9 @@ const NewFlight = () => {
     const handleDeleteAirport = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const result = await AirportService.deleteFlight(airportToDelete);
+            const result = await AirportService.deleteFlight(parseInt(airportToDelete));
             if (result.errorCode === ServiceErrorCode.success) {
-                setAirports((prev) => prev.filter((airport) => airport.id !== airportToDelete));
+                setAirports((prev) => prev.filter((airport) => airport.id !== parseInt(airportToDelete)));
                 ErrorService.successMessage('Airport deleted!', '');
                 setIsDeleteModalOpen(false);
                 setAirportToDelete('');

@@ -1,5 +1,5 @@
 export interface IAirport {
-    id: number;
+    id?: number;
     short_form: string;
     name: string;
 }
