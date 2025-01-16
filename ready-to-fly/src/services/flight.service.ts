@@ -2,6 +2,7 @@ import { ApiService } from "./api.service";
 import { IFlight, IFlightId } from "@/models/flight.model";
 import axios from 'axios';
 import { ServiceResult } from "./service.result";
+import { IFlightCount } from "@/interfaces/IFlightCount";
 
 export class FlightService {
 
@@ -71,11 +72,11 @@ export class FlightService {
         }
     }
 
-    static async countFlights(): Promise<ServiceResult<number>> {
+    static async countFlights(): Promise<ServiceResult<IFlightCount>> {
         try {
             const res = await axios.get(`${ApiService.baseURL}/flights/count`);
             if (res.status === 200) {
-                return ServiceResult.success(res.data)
+                return ServiceResult.success<IFlightCount>(res.data)
             }
             return ServiceResult.failed();
         } catch (err) {

@@ -29,7 +29,7 @@ const Dashboard = () => {
       const flightsResult = await FlightService.getAllFlights();
 
       if (flightCountResult.errorCode === ServiceErrorCode.success) {
-        setFlightCount(flightCountResult.result?.count);
+        setFlightCount(flightCountResult.result?.count ?? 0);
       } else {
         ErrorService.errorMessage('Counting flights', 'error while counting flights');
       }
