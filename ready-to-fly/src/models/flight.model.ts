@@ -1,9 +1,11 @@
 export interface IFlight {
     arrivalAirport?: {
+        id: number;
         name: string;
         short_form: string;
     };
     departureAirport?: {
+        id: number;
         name: string;
         short_form: string;
     };
