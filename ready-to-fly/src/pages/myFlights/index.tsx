@@ -97,7 +97,7 @@ const MyFlights = () => {
         return <div className="flex justify-center items-center h-screen"><div className="loader"></div></div>;
     }
 
-    const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() + i);
+    const years = Array.from({ length: 6 }, (_, i) => (new Date().getFullYear() -1) + i);
     const months = [
         { value: 1, label: 'January' },
         { value: 2, label: 'February' },

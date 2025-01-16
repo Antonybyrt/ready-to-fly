@@ -150,7 +150,7 @@ const Dashboard = () => {
           className="p-2 border rounded text-black"
         >
           {/* Créez une plage d'années pour le sélecteur */}
-          {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() + i).map(year => (
+          {Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() -1) + i).map(year => (
             <option key={year} value={year}>{year}</option>
           ))}
         </select>
