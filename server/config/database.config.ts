@@ -1,12 +1,11 @@
 import { Sequelize } from 'sequelize';
+import { config } from 'dotenv'
+config();
 
-const sequelize = new Sequelize('ReadyToFLy', 'root', 'root', {
-    host: '127.0.0.1',
-    port: 3001,
+const sequelize = new Sequelize('ReadyToFly', process.env.DATABASE_USERNAME as string, process.env.DATABASE_PASSWORD, {
+    host: process.env.HOST,
+    port: 3306,
     dialect: 'mysql',
-    dialectOptions: {
-        socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock',
-    },
 });
 
 export default sequelize;
