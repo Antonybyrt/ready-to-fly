@@ -53,6 +53,11 @@ const MyFlights = () => {
     };
 
     const handleDelete = async (flightId: number) => {
+        const isConfirmed = await ErrorService.confirmDelete();
+        if (!isConfirmed) {
+            return;
+        }
+        
         try {
             const result = await FlightService.deleteFlight(flightId);
             if (result.errorCode === ServiceErrorCode.success) {

@@ -11,8 +11,8 @@ const RemoveAirportModal: React.FC<RemoveAirportModalProps> = ({
 }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-md shadow-md">
-                <h2 className="text-xl text-black font-bold mb-4">Delete Airport</h2>
+            <div className="bg-gray-800 p-6 rounded-md shadow-md">
+                <h2 className="text-xl text-white font-bold mb-4">Delete Airport</h2>
                 <form onSubmit={handleDeleteAirport} className="space-y-4">
                     <div>
                         <label htmlFor="airportToDelete" className="block text-sm font-medium text-gray-700">

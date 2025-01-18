@@ -23,7 +23,8 @@ const Dashboard = () => {
   const [nextFlight, setNextFlight] = useState<IFlight | null>(null);
   const [mostPopularDestination, setMostPopularDestination] = useState<string>('');
   const [monthlyFlightData, setMonthlyFlightData] = useState<any>(null);
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear()); // Année sélectionnée
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [totalHoursInAir, setTotalHoursInAir] = useState<number>(0);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -46,10 +47,20 @@ const Dashboard = () => {
         }
 
         const destinationCounts: { [key: string]: number } = {};
+
         flights.forEach(flight => {
-          destinationCounts[flight.arrivalAirport?.name + ` (${flight.arrivalAirport?.short_form})`] = (destinationCounts[flight.arrivalAirport?.name as string] || 0) + 1;
+          const arrivalAirport = flight.arrivalAirport;
+          if (arrivalAirport?.short_form !== 'ORY') {
+            console.log(arrivalAirport)
+            const destinationKey = `${arrivalAirport?.name} (${arrivalAirport?.short_form})`;
+            destinationCounts[destinationKey] = (destinationCounts[destinationKey] || 0) + 1;
+          }
         });
-        const mostPopularDest = Object.keys(destinationCounts).reduce((a, b) => destinationCounts[a] > destinationCounts[b] ? a : b, '');
+
+        const mostPopularDest = Object.keys(destinationCounts).reduce((a, b) => 
+          destinationCounts[a] > destinationCounts[b] ? a : b, 
+          ''
+        );
         setMostPopularDestination(mostPopularDest);
 
         const monthlyData = new Array(12).fill(0);
@@ -71,6 +82,9 @@ const Dashboard = () => {
             tension: 0.1,
           }]
         });
+
+        const totalHours = flights.reduce((acc, flight) => acc + flight.duration, 0);
+        setTotalHoursInAir(totalHours);
       } else {
         ErrorService.errorMessage('Fetching flights', 'error while fetching flights');
       }
@@ -81,11 +95,11 @@ const Dashboard = () => {
 
   return (
     <div className="p-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-green-500 p-4 rounded shadow">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-red-500 p-4 rounded shadow">
           <h2 className="text-lg font-bold">Total Flights</h2>
-          <div className="bg-green-500 text-white p-4 rounded text-center">
-            <p className="text-xl">{flightCount}</p>
+          <div className="bg-red-500 text-white p-4 rounded text-center">
+            <p className="text-xl">{flightCount} flights</p>
           </div>
         </div>
         <div className="bg-blue-500 p-4 rounded shadow">
@@ -98,10 +112,16 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-        <div className="bg-orange-500 p-4 rounded shadow">
+        <div className="bg-pink-500 p-4 rounded shadow">
           <h2 className="text-lg font-bold">Most Popular Destination</h2>
-          <div className="bg-orange-500 text-white p-4 rounded text-center">
+          <div className="bg-pink-500 text-white p-4 rounded text-center">
             <p className="text-xl">{mostPopularDestination}</p>
+          </div>
+        </div>
+        <div className="bg-purple-500 p-4 rounded shadow">
+          <h2 className="text-lg font-bold">Hours in the Air</h2>
+          <div className="bg-purple-500 text-white p-4 rounded text-center">
+            <p className="text-xl">{totalHoursInAir} hours</p>
           </div>
         </div>
       </div>
@@ -144,18 +164,17 @@ const Dashboard = () => {
       )}
       <br></br>
       <div className="mb-4">
-        {/* Sélecteur d'année */}
         <select
           id="yearSelect"
           value={selectedYear}
           onChange={(e) => setSelectedYear(Number(e.target.value))}
           className="p-2 border rounded text-black"
         >
-          {/* Créez une plage d'années pour le sélecteur */}
           {Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() -1) + i).map(year => (
             <option key={year} value={year}>{year}</option>
           ))}
         </select>
+        <p className="text-sm text-gray-500">* All hours are in TU</p>
       </div>
     </div>
   );

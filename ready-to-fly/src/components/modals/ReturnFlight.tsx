@@ -1,10 +1,12 @@
 import { IAirportId } from '@/models/airport.model';
+import { ErrorService } from '@/services/error.service';
 import React, { useState } from 'react';
 
 interface ReturnFlightModalProps {
     departureId: string;
     arrivalId: string;
     airports: IAirportId[];
+    firstStartDate: string;
     onClose: () => void;
     onSubmit: (flightData: {
         departure_id: number;
@@ -19,6 +21,7 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
     departureId,
     arrivalId,
     airports,
+    firstStartDate,
     onClose,
     onSubmit,
 }) => {
@@ -30,6 +33,10 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (new Date(startDate) <= new Date(firstStartDate)) {
+            ErrorService.errorMessage('Flight return', 'Your return flight must be later than your first flight !')
+        }
 
         const flightData = {
             departure_id: Number(returnDepartureId),
@@ -44,8 +51,8 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-md shadow-md w-80">
-                <h2 className="text-xl text-black font-bold mb-4">Create Return Flight</h2>
+            <div className="bg-gray-800 p-6 rounded-md shadow-md w-80">
+                <h2 className="text-xl text-white font-bold mb-4">Create Return Flight</h2>
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Departure Airport</label>

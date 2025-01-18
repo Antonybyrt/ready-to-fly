@@ -71,8 +71,8 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-md shadow-md w-80">
-                <h2 className="text-xl text-black font-bold mb-4">Edit Flight</h2>
+            <div className="bg-gray-800 p-6 rounded-md shadow-md w-80">
+                <h2 className="text-xl text-white font-bold mb-4">Edit Flight</h2>
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Departure Airport</label>
