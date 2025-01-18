@@ -244,6 +244,7 @@ const NewFlight = () => {
                 <ReturnFlightModal
                     departureId={departureId}
                     arrivalId={arrivalId}
+                    firstStartDate={startDate}
                     airports={airports}
                     onClose={() => setIsReturnModalOpen(false)}
                     onSubmit={handleReturnFlightSubmit}
