@@ -7,6 +7,7 @@ import { ServiceErrorCode } from '@/services/service.result';
 import { IAirportId } from '@/models/airport.model';
 import AddAirport from '@/components/modals/AddAirport';
 import RemoveAirportModal from '@/components/modals/RemoveAirport';
+import ReturnFlightModal from '@/components/modals/ReturnFlight';
 
 
 const NewFlight = () => {
@@ -21,6 +22,7 @@ const NewFlight = () => {
     const [newAirportName, setNewAirportName] = useState('');
     const [newAirportShortForm, setNewAirportShortForm] = useState('');
     const [airportToDelete, setAirportToDelete] = useState('');
+    const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -105,6 +107,29 @@ const NewFlight = () => {
         }
     };
 
+    const handleReturnFlightSubmit = async (flightData: any) => {
+        const startDateTime = new Date(flightData.start_date);
+        
+        const durationStr = flightData.duration.padStart(4, '0');
+        const hours = Number(durationStr.slice(0, -2));
+        const minutes = Number(durationStr.slice(-2));
+    
+        const endDate = new Date(startDateTime);
+        endDate.setHours(startDateTime.getHours() + hours);
+        endDate.setMinutes(startDateTime.getMinutes() + minutes);
+
+        flightData.end_date = endDate;
+        try {
+            const result = await FlightService.createFlight(flightData);
+            if (result.errorCode === ServiceErrorCode.success) {
+                ErrorService.successMessage('Return flight created!', '');
+                setIsReturnModalOpen(false);
+            }
+        } catch (err) {
+            ErrorService.errorMessage('Failed to create return flight', '' + err);
+        }
+    };
+
     return (
         <div className="max-w-md mx-auto mt-10">
             <h1 className="text-2xl font-bold text-center">Create a New Flight</h1>
@@ -154,7 +179,7 @@ const NewFlight = () => {
                 {/* Duration Field */}
                 <div>
                     <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
-                        Duration (in hours)
+                        Duration (HH.MM)
                     </label>
                     <input
                         type="number"
@@ -186,12 +211,13 @@ const NewFlight = () => {
                     <label htmlFor="appreciation" className="block text-sm font-medium text-gray-700">
                         Appreciation
                     </label>
-                    <input
-                        type="text"
+                    <textarea
                         id="appreciation"
                         value={appreciation}
                         onChange={(e) => setAppreciation(e.target.value)}
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                        rows={4}
+                        placeholder="Enter detailed appreciation here..."
                     />
                 </div>
 
@@ -207,6 +233,22 @@ const NewFlight = () => {
             <div onClick={() => setIsDeleteModalOpen(true)} className="mt-2 ml-2 text-sm inline-block bg-red-600 text-white py-1 px-2 rounded cursor-pointer">
                 Delete Airport
             </div>
+            <div
+                onClick={() => setIsReturnModalOpen(true)}
+                className="mt-4 text-sm inline-block bg-indigo-600 text-white py-1 px-2 rounded cursor-pointer ml-2"
+            >
+                Vol retour ?
+            </div>
+
+            {isReturnModalOpen && (
+                <ReturnFlightModal
+                    departureId={departureId}
+                    arrivalId={arrivalId}
+                    airports={airports}
+                    onClose={() => setIsReturnModalOpen(false)}
+                    onSubmit={handleReturnFlightSubmit}
+                />
+            )}
 
             {/* Modals */}
             {isAddModalOpen && (

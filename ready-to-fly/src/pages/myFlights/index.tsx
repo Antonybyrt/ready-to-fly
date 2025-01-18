@@ -4,6 +4,7 @@ import { IFlight, IFlightId } from '@/models/flight.model';
 import { ErrorService } from '@/services/error.service';
 import EditFlightModal from '@/components/modals/EditFlight';
 import { ServiceErrorCode } from '@/services/service.result';
+import { MoreInfoModal } from '@/components/modals/MoreInfo';
 
 const MyFlights = () => {
     const [flights, setFlights] = useState<IFlightId[]>([]);
@@ -19,6 +20,7 @@ const MyFlights = () => {
     const [searchDate, setSearchDate] = useState<string>('');
     const [selectedFlight, setSelectedFlight] = useState<IFlightId | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isMoreInfoModalOpen, setIsMoreInfoModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchFlights = async () => {
@@ -43,6 +45,11 @@ const MyFlights = () => {
     const handleEdit = (flight: IFlightId) => {
         setSelectedFlight(flight);
         setIsEditModalOpen(true);
+    };
+
+    const handleMoreInfo = (flight: IFlightId) => {
+        setSelectedFlight(flight);
+        setIsMoreInfoModalOpen(true);
     };
 
     const handleDelete = async (flightId: number) => {
@@ -202,6 +209,12 @@ const MyFlights = () => {
                                         >
                                             Delete Flight
                                         </button>
+                                        <button
+                                            onClick={() => handleMoreInfo(flight)}
+                                            className="bg-green-600 text-white py-1 px-4 rounded ml-2"
+                                        >
+                                            More Info
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -243,6 +256,13 @@ const MyFlights = () => {
                         setFlights((prev) => prev.map((f) => f.id === updatedFlight.id ? updatedFlight : f));
                         setIsEditModalOpen(false);
                     }}
+                />
+            )}
+
+            {isMoreInfoModalOpen && selectedFlight && (
+                <MoreInfoModal
+                    flight={selectedFlight}
+                    onClose={() => setIsMoreInfoModalOpen(false)}
                 />
             )}
         </div>

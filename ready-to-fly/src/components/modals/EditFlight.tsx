@@ -9,13 +9,14 @@ import { IAirportId, IAirport } from '@/models/airport.model';
 
 const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUpdate }) => {
     const [airports, setAirports] = useState<IAirport[]>([]);
-    const [departureId, setDepartureId] = useState(flight.departureAirport?.id || '');
-    const [arrivalId, setArrivalId] = useState(flight.arrivalAirport?.id || '');
+    const [departureId, setDepartureId] = useState(flight.departure_id || '');
+    const [arrivalId, setArrivalId] = useState(flight.arrival_id || '');
     const [duration, setDuration] = useState(flight.duration.toString());
     const [startDate, setStartDate] = useState(new Date(flight.start_date).toISOString().slice(0, 16));
     const [appreciation, setAppreciation] = useState(flight.appreciation);
 
     useEffect(() => {
+        console.log(flight)
         const fetchAirports = async () => {
             try {
                 const result = await AirportService.getAllAirports();
@@ -25,7 +26,7 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
                     ErrorService.errorMessage('Fetching airports', 'Error while fetching airports');
                 }
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         };
         fetchAirports();
@@ -35,14 +36,14 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
         e.preventDefault();
 
         const startDateTime = new Date(startDate);
-            
-            const durationStr = duration.padStart(4, '0');
-            const hours = Number(durationStr.slice(0, -2));
-            const minutes = Number(durationStr.slice(-2));
-        
-            const endDate = new Date(startDateTime);
-            endDate.setHours(startDateTime.getHours() + hours);
-            endDate.setMinutes(startDateTime.getMinutes() + minutes);
+
+        const durationStr = duration.padStart(4, '0');
+        const hours = Number(durationStr.slice(0, -2));
+        const minutes = Number(durationStr.slice(-2));
+    
+        const endDate = new Date(startDateTime);
+        endDate.setHours(startDateTime.getHours() + hours);
+        endDate.setMinutes(startDateTime.getMinutes() + minutes);
 
         const updatedFlightData = {
             ...flight,
@@ -51,7 +52,7 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
             duration: Number(duration),
             start_date: startDateTime,
             end_date: endDate,
-            appreciation
+            appreciation,
         };
 
         try {
@@ -59,6 +60,9 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
             if (result.errorCode === ServiceErrorCode.success) {
                 ErrorService.successMessage('Flight updated successfully!', '');
                 onUpdate(result.result as IFlightId);
+            }
+            else {
+                ErrorService.errorMessage('Failed to update flight', 'Message too long')
             }
         } catch (err) {
             ErrorService.errorMessage('Failed to update flight', '' + err);
@@ -124,10 +128,11 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Appreciation</label>
-                        <input
-                            type="string"
+                        <textarea
+                            id="appreciation"
                             value={appreciation}
-                            onChange={(e) => setDuration(e.target.value)}
+                            rows={4}
+                            onChange={(e) => setAppreciation(e.target.value)}
                             className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
                         />
                     </div>

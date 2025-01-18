@@ -26,7 +26,6 @@ const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear()); // Année sélectionnée
 
   useEffect(() => {
-    console.log('URLLLLLL', process.env.NEXT_PUBLIC_URL)
     const fetchStatistics = async () => {
       const flightCountResult = await FlightService.countFlights();
       const flightsResult = await FlightService.getAllFlights();
