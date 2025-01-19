@@ -94,6 +94,12 @@ const NewFlight = () => {
 
     const handleDeleteAirport = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const isConfirmed = await ErrorService.confirmDelete();
+        if (!isConfirmed) {
+            return;
+        }
+        
         try {
             const result = await AirportService.deleteFlight(parseInt(airportToDelete));
             if (result.errorCode === ServiceErrorCode.success) {

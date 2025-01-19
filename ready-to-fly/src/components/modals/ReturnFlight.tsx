@@ -1,6 +1,6 @@
 import { IAirportId } from '@/models/airport.model';
 import { ErrorService } from '@/services/error.service';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ReturnFlightModalProps {
     departureId: string;
@@ -36,6 +36,7 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
 
         if (new Date(startDate) <= new Date(firstStartDate)) {
             ErrorService.errorMessage('Flight return', 'Your return flight must be later than your first flight !')
+            return;
         }
 
         const flightData = {
@@ -106,11 +107,13 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Appreciation</label>
-                        <input
-                            type="text"
+                        <textarea
+                            id="appreciation"
                             value={appreciation}
+                            rows={4}
                             onChange={(e) => setAppreciation(e.target.value)}
                             className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                            placeholder="Enter detailed appreciation here..."
                         />
                     </div>
                     <div className="flex justify-end space-x-2 mt-4">
