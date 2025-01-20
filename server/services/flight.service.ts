@@ -95,7 +95,6 @@ export class FlightService {
 
     async countFlights(): Promise<ServiceResult<number>> {
         try {
-            console.log('here')
             const count = await Flight.count();
             return ServiceResult.success(count);
         } catch (error) {

@@ -8,6 +8,7 @@ import { IAirportId } from '@/models/airport.model';
 import AddAirport from '@/components/modals/AddAirport';
 import RemoveAirportModal from '@/components/modals/RemoveAirport';
 import ReturnFlightModal from '@/components/modals/ReturnFlight';
+import auth from '@/services/auth.service';
 
 
 const NewFlight = () => {
@@ -24,6 +25,19 @@ const NewFlight = () => {
     const [airportToDelete, setAirportToDelete] = useState('');
     const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
     const router = useRouter();
+    const [user, setUser] = useState<number | null>(); 
+    
+        useEffect(() => {
+        const fetchUser = async () => {
+            const user = await auth.getIdUser();
+            if (user) {
+            setUser(user);
+            } else {
+            router.push('../auth/logout');
+            }
+        };
+        fetchUser();
+        }, []);
 
     useEffect(() => {
         const fetchAirports = async () => {
@@ -138,145 +152,153 @@ const NewFlight = () => {
 
     return (
         <div className="max-w-md mx-auto mt-10">
-            <h1 className="text-2xl font-bold text-center">Create a New Flight</h1>
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                {/* Departure Airport Select Box */}
-                <div>
-                    <label htmlFor="departureId" className="block text-sm font-medium text-gray-700">
-                        Departure Airport
-                    </label>
-                    <select
-                        id="departureId"
-                        value={departureId}
-                        onChange={(e) => setDepartureId(e.target.value)}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                        required
-                    >
-                        <option value="">Select an airport</option>
-                        {airports.map((airport) => (
-                            <option key={airport.id} value={airport.id}>
-                                {airport.name} ({airport.short_form})
-                            </option>
-                        ))}
-                    </select>
+            {user ?(
+                <>
+                <h1 className="text-2xl font-bold text-center text-pink-300">Take off into new horizons</h1>
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    {/* Departure Airport Select Box */}
+                    <div>
+                        <label htmlFor="departureId" className="block text-sm font-medium text-gray-600">
+                            Departure Airport
+                        </label>
+                        <select
+                            id="departureId"
+                            value={departureId}
+                            onChange={(e) => setDepartureId(e.target.value)}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                            required
+                        >
+                            <option value="">Select an airport</option>
+                            {airports.map((airport) => (
+                                <option key={airport.id} value={airport.id}>
+                                    {airport.name} ({airport.short_form})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Arrival Airport Select Box */}
+                    <div>
+                        <label htmlFor="arrivalId" className="block text-sm font-medium text-gray-600">
+                            Arrival Airport
+                        </label>
+                        <select
+                            id="arrivalId"
+                            value={arrivalId}
+                            onChange={(e) => setArrivalId(e.target.value)}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                            required
+                        >
+                            <option value="">Select an airport</option>
+                            {airports.map((airport) => (
+                                <option key={airport.id} value={airport.id}>
+                                    {airport.name} ({airport.short_form})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Duration Field */}
+                    <div>
+                        <label htmlFor="duration" className="block text-sm font-medium text-gray-600">
+                            Duration (HH.MM)
+                        </label>
+                        <input
+                            type="number"
+                            id="duration"
+                            value={duration}
+                            onChange={(e) => setDuration(e.target.value)}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                            placeholder="00:00"
+                            required
+                        />
+                    </div>
+
+                    {/* Start Date and Time Field */}
+                    <div>
+                        <label htmlFor="startDate" className="block text-sm font-medium text-gray-600">
+                            Start Date and Time
+                        </label>
+                        <input
+                            type="datetime-local"
+                            id="startDate"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                            required
+                        />
+                    </div>
+
+                    {/* Appreciation Field */}
+                    <div>
+                        <label htmlFor="appreciation" className="block text-sm font-medium text-gray-600">
+                            Appreciation
+                        </label>
+                        <textarea
+                            id="appreciation"
+                            value={appreciation}
+                            onChange={(e) => setAppreciation(e.target.value)}
+                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                            rows={4}
+                            placeholder="Enter detailed appreciation here..."
+                        />
+                    </div>
+
+                    {/* Submit Button */}
+                    <button type="submit" className="w-full p-2 mt-4 text-white bg-pink-500 rounded-md hover:bg-pink-600">
+                        Create Flight
+                    </button>
+                </form>
+
+                <div onClick={() => setIsAddModalOpen(true)} className="mt-2 text-sm inline-block bg-blue-600 text-white py-1 px-2 rounded cursor-pointer">
+                    Add Airport
+                </div>
+                <div onClick={() => setIsDeleteModalOpen(true)} className="mt-2 ml-2 text-sm inline-block bg-red-600 text-white py-1 px-2 rounded cursor-pointer">
+                    Delete Airport
+                </div>
+                <div
+                    onClick={() => setIsReturnModalOpen(true)}
+                    className="mt-4 text-sm inline-block bg-purple-600 text-white py-1 px-2 rounded cursor-pointer ml-2"
+                >
+                    Vol retour ?
                 </div>
 
-                {/* Arrival Airport Select Box */}
-                <div>
-                    <label htmlFor="arrivalId" className="block text-sm font-medium text-gray-700">
-                        Arrival Airport
-                    </label>
-                    <select
-                        id="arrivalId"
-                        value={arrivalId}
-                        onChange={(e) => setArrivalId(e.target.value)}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                        required
-                    >
-                        <option value="">Select an airport</option>
-                        {airports.map((airport) => (
-                            <option key={airport.id} value={airport.id}>
-                                {airport.name} ({airport.short_form})
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Duration Field */}
-                <div>
-                    <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
-                        Duration (HH.MM)
-                    </label>
-                    <input
-                        type="number"
-                        id="duration"
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                        required
+                {isReturnModalOpen && (
+                    <ReturnFlightModal
+                        departureId={departureId}
+                        arrivalId={arrivalId}
+                        firstStartDate={startDate}
+                        airports={airports}
+                        onClose={() => setIsReturnModalOpen(false)}
+                        onSubmit={handleReturnFlightSubmit}
                     />
-                </div>
+                )}
 
-                {/* Start Date and Time Field */}
-                <div>
-                    <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
-                        Start Date and Time
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="startDate"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                        required
+                {/* Modals */}
+                {isAddModalOpen && (
+                    <AddAirport
+                        newAirportName={newAirportName}
+                        newAirportShortForm={newAirportShortForm}
+                        setNewAirportName={setNewAirportName}
+                        setNewAirportShortForm={setNewAirportShortForm}
+                        handleAddAirport={handleAddAirport}
+                        closeModal={() => setIsAddModalOpen(false)}
                     />
-                </div>
+                )}
 
-                {/* Appreciation Field */}
-                <div>
-                    <label htmlFor="appreciation" className="block text-sm font-medium text-gray-700">
-                        Appreciation
-                    </label>
-                    <textarea
-                        id="appreciation"
-                        value={appreciation}
-                        onChange={(e) => setAppreciation(e.target.value)}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                        rows={4}
-                        placeholder="Enter detailed appreciation here..."
+                {isDeleteModalOpen && (
+                    <RemoveAirportModal
+                        airports={airports}
+                        airportToDelete={airportToDelete}
+                        setAirportToDelete={setAirportToDelete}
+                        handleDeleteAirport={handleDeleteAirport}
+                        closeModal={() => setIsDeleteModalOpen(false)}
                     />
-                </div>
+                )}
+                </>
 
-                {/* Submit Button */}
-                <button type="submit" className="w-full p-2 mt-4 text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                    Create Flight
-                </button>
-            </form>
-
-            <div onClick={() => setIsAddModalOpen(true)} className="mt-2 text-sm inline-block bg-green-600 text-white py-1 px-2 rounded cursor-pointer">
-                Add Airport
-            </div>
-            <div onClick={() => setIsDeleteModalOpen(true)} className="mt-2 ml-2 text-sm inline-block bg-red-600 text-white py-1 px-2 rounded cursor-pointer">
-                Delete Airport
-            </div>
-            <div
-                onClick={() => setIsReturnModalOpen(true)}
-                className="mt-4 text-sm inline-block bg-indigo-600 text-white py-1 px-2 rounded cursor-pointer ml-2"
-            >
-                Vol retour ?
-            </div>
-
-            {isReturnModalOpen && (
-                <ReturnFlightModal
-                    departureId={departureId}
-                    arrivalId={arrivalId}
-                    firstStartDate={startDate}
-                    airports={airports}
-                    onClose={() => setIsReturnModalOpen(false)}
-                    onSubmit={handleReturnFlightSubmit}
-                />
-            )}
-
-            {/* Modals */}
-            {isAddModalOpen && (
-                <AddAirport
-                    newAirportName={newAirportName}
-                    newAirportShortForm={newAirportShortForm}
-                    setNewAirportName={setNewAirportName}
-                    setNewAirportShortForm={setNewAirportShortForm}
-                    handleAddAirport={handleAddAirport}
-                    closeModal={() => setIsAddModalOpen(false)}
-                />
-            )}
-
-            {isDeleteModalOpen && (
-                <RemoveAirportModal
-                    airports={airports}
-                    airportToDelete={airportToDelete}
-                    setAirportToDelete={setAirportToDelete}
-                    handleDeleteAirport={handleDeleteAirport}
-                    closeModal={() => setIsDeleteModalOpen(false)}
-                />
+            ) : (
+                <div className="text-center">Connect to your account before...</div>
             )}
         </div>
     );

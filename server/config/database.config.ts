@@ -6,6 +6,9 @@ const sequelize = new Sequelize('ReadyToFly', process.env.DATABASE_USERNAME as s
     host: process.env.HOST,
     port: 3306,
     dialect: 'mysql',
+    // dialectOptions: {
+    //     socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock',
+    // },
 });
 
 export default sequelize;

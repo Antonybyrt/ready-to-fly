@@ -1,183 +1,94 @@
-import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import { FlightService } from '@/services/flight.service';
-import { IFlight } from '@/models/flight.model';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { ServiceErrorCode } from '@/services/service.result';
-import { ErrorService } from '@/services/error.service';
-import { config } from 'dotenv';
-config();
+"use client";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+import { useState } from "react";
+import auth from "@/services/auth.service";
+import { useRouter } from "next/navigation";
+import { ErrorService } from "@/services/error.service";
 
-const Dashboard = () => {
-  const [flightCount, setFlightCount] = useState<number>(0);
-  const [nextFlight, setNextFlight] = useState<IFlight | null>(null);
-  const [mostPopularDestination, setMostPopularDestination] = useState<string>('');
-  const [monthlyFlightData, setMonthlyFlightData] = useState<any>(null);
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-  const [totalHoursInAir, setTotalHoursInAir] = useState<number>(0);
+export default function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchStatistics = async () => {
-      const flightCountResult = await FlightService.countFlights();
-      const flightsResult = await FlightService.getAllFlights();
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
 
-      if (flightCountResult.errorCode === ServiceErrorCode.success) {
-        setFlightCount(flightCountResult.result?.count ?? 0);
-      } else {
-        ErrorService.errorMessage('Counting flights', 'error while counting flights');
+    const res = await auth.login(email, password);
+    setLoading(false);
+
+    if (res != null) {
+      try {
+        router.push("../dashboard");
+      } catch (err) {
+        ErrorService.errorMessage("Error while connecting", err as string);
       }
-
-      if (flightsResult.errorCode === ServiceErrorCode.success) {
-        const flights = flightsResult.result as IFlight[];
-
-        const upcomingFlights = flights.filter(flight => new Date(flight.start_date) > new Date());
-        if (upcomingFlights.length > 0) {
-          const next = upcomingFlights.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())[0];
-          setNextFlight(next);
-        }
-
-        const destinationCounts: { [key: string]: number } = {};
-
-        flights.forEach(flight => {
-          const arrivalAirport = flight.arrivalAirport;
-          if (arrivalAirport?.short_form !== 'ORY') {
-            console.log(arrivalAirport)
-            const destinationKey = `${arrivalAirport?.name} (${arrivalAirport?.short_form})`;
-            destinationCounts[destinationKey] = (destinationCounts[destinationKey] || 0) + 1;
-          }
-        });
-
-        const mostPopularDest = Object.keys(destinationCounts).reduce((a, b) => 
-          destinationCounts[a] > destinationCounts[b] ? a : b, 
-          ''
-        );
-        setMostPopularDestination(mostPopularDest);
-
-        const monthlyData = new Array(12).fill(0);
-        flights.forEach(flight => {
-          const flightDate = new Date(flight.start_date);
-          if (flightDate.getFullYear() === selectedYear) {
-            const month = flightDate.getMonth();
-            monthlyData[month]++;
-          }
-        });
-        
-        setMonthlyFlightData({
-          labels: Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'short' })),
-          datasets: [{
-            label: `Flight(s) in ${selectedYear}`,
-            data: monthlyData,
-            fill: false,
-            borderColor: '#4CAF50',
-            tension: 0.1,
-          }]
-        });
-
-        const totalHours = flights.reduce((acc, flight) => acc + flight.duration, 0);
-        setTotalHoursInAir(totalHours);
-      } else {
-        ErrorService.errorMessage('Fetching flights', 'error while fetching flights');
-      }
-    };
-
-    fetchStatistics();
-  }, [selectedYear]);
+    } else {
+      ErrorService.errorMessage("Error while connecting", "Email or password incorrect");
+    }
+  }
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-red-500 p-4 rounded shadow">
-          <h2 className="text-lg font-bold">Total Flights</h2>
-          <div className="bg-red-500 text-white p-4 rounded text-center">
-            <p className="text-xl">{flightCount} flights</p>
-          </div>
-        </div>
-        <div className="bg-blue-500 p-4 rounded shadow">
-          <h2 className="text-lg font-bold">Next Flight</h2>
-          <div className="bg-blue-500 text-white p-4 rounded text-center">
-            {nextFlight ? (
-              <p className="text-xl">{nextFlight.arrivalAirport?.name} ({nextFlight.arrivalAirport?.short_form}) at {new Date(nextFlight.start_date).toLocaleString()}</p>
-            ) : (
-              <p className="text-xl">No upcoming flights</p>
-            )}
-          </div>
-        </div>
-        <div className="bg-pink-500 p-4 rounded shadow">
-          <h2 className="text-lg font-bold">Most Popular Destination</h2>
-          <div className="bg-pink-500 text-white p-4 rounded text-center">
-            <p className="text-xl">{mostPopularDestination}</p>
-          </div>
-        </div>
-        <div className="bg-purple-500 p-4 rounded shadow">
-          <h2 className="text-lg font-bold">Hours in the Air</h2>
-          <div className="bg-purple-500 text-white p-4 rounded text-center">
-            <p className="text-xl">{totalHoursInAir} hours</p>
-          </div>
-        </div>
-      </div>
-
-      <br />
-
-      <h2 className="text-lg font-bold">Monthly Flights</h2>
-
-      {monthlyFlightData && (
+    <div className="min-h-screen flex flex-col justify-center px-4">
+      <h2 className="text-3xl font-bold text-pink-300 text-center mb-8 font-sans">
+        Lift off begins here
+      </h2>
+      <form onSubmit={onSubmit} className="max-w-lg w-full mx-auto space-y-6">
         <div>
-          <Line
-            data={monthlyFlightData} 
-            options={{
-              maintainAspectRatio: false,
-              elements: {
-                line: {
-                  borderWidth: 2,
-                  borderColor: '#4CAF50',
-                  tension: 0.4,
-                },
-                point: {
-                  radius: 4,
-                  backgroundColor: '#4CAF50',
-                  borderColor: '#ffffff',
-                  borderWidth: 2,
-                },
-              },
-              plugins: {
-                legend: {
-                  display: true,
-                  position: 'top',
-                },
-                tooltip: {
-                  enabled: true, 
-                },
-              },
-            }} 
+          <label
+            htmlFor="email"
+            className="block text-lg font-medium text-gray-300 mb-2"
+          >
+            Mail address
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 text-gray-200 border border-gray-700 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+            placeholder="Enter your email"
           />
         </div>
-      )}
-      <br></br>
-      <div className="mb-4">
-        <select
-          id="yearSelect"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(Number(e.target.value))}
-          className="p-2 border rounded text-black"
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-lg font-medium text-gray-300 mb-2"
+          >
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 text-gray-200 border border-gray-700 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+            placeholder="Enter your password"
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-pink-400 hover:bg-pink-500 text-white font-medium py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
         >
-          {Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() -1) + i).map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-        <p className="text-sm text-gray-500">* All hours are in TU</p>
-      </div>
+          Login
+        </button>
+      </form>
+
+      {loading && (
+        <div className="text-center mt-6 text-pink-500 text-lg">
+          <span className="animate-pulse">Loading...</span>
+        </div>
+      )}
+      
+      <p className="text-gray-400 text-center mt-8 text-lg">
+        You don't have an account ?{" "}
+        <a href="mailto:antony.loussararian@gmail.com?subject=Access Request" className="text-pink-400 hover:underline">
+          Make an access request
+        </a>
+      </p>
     </div>
   );
-};
-
-export default Dashboard;
+}

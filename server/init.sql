@@ -17,6 +17,24 @@ CREATE TABLE IF NOT EXISTS Flight (
     appreciation VARCHAR(1500)
 );
 
+CREATE TABLE IF NOT EXISTS user (
+    id INT AUTO_INCREMENT,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    pw VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE (email),
+);
+
+CREATE TABLE IF NOT EXISTS user_session (
+    fk_user_id INT,
+    expirationDate DATETIME NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    PRIMARY KEY (token),
+    FOREIGN KEY (fk_user_id) REFERENCES user(id)
+);
+
 ALTER TABLE Flight ADD INDEX (departure_id);
 ALTER TABLE Flight ADD INDEX (arrival_id);
 

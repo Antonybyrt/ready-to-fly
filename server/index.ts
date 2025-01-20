@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import sequelize from './config/database.config';
 import cors from "cors";
-import { FlightController, AirportController } from './controllers';
+import { FlightController, AirportController, AuthController, UserController } from './controllers';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -10,11 +10,15 @@ const PORT = process.env.PORT;
 app.use(bodyParser.json());
 app.use(cors());
 
-const swapController = new FlightController();
+const flightController = new FlightController();
 const airportController = new AirportController();
+const authController = new AuthController();
+const userController = new UserController();
 
-app.use('/flights', swapController.buildRoutes());
+app.use('/flights', flightController.buildRoutes());
 app.use('/airports', airportController.buildRoutes());
+app.use('/auth', authController.buildRoutes());
+app.use('/user', userController.buildRoutes());
 
 sequelize.sync().then(() => {
   app.listen(3306, () => {

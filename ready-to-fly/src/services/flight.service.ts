@@ -8,7 +8,6 @@ export class FlightService {
 
     static async createFlight(input: IFlight): Promise<ServiceResult<IFlightId>> {
         try {
-            console.log(input);
             const res = await axios.post(`${ApiService.baseURL}/flights`, input);
             if (res.status === 201) {
                 return ServiceResult.success<IFlightId>(res.data);

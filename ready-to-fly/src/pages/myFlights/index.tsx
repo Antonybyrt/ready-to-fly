@@ -5,6 +5,8 @@ import { ErrorService } from '@/services/error.service';
 import EditFlightModal from '@/components/modals/EditFlight';
 import { ServiceErrorCode } from '@/services/service.result';
 import { MoreInfoModal } from '@/components/modals/MoreInfo';
+import { useRouter } from 'next/router';
+import auth from '@/services/auth.service';
 
 const MyFlights = () => {
     const [flights, setFlights] = useState<IFlightId[]>([]);
@@ -21,6 +23,20 @@ const MyFlights = () => {
     const [selectedFlight, setSelectedFlight] = useState<IFlightId | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isMoreInfoModalOpen, setIsMoreInfoModalOpen] = useState(false);
+    const [user, setUser] = useState<number | null>(); 
+    const router = useRouter();
+
+    useEffect(() => {
+    const fetchUser = async () => {
+        const user = await auth.getIdUser();
+        if (user) {
+        setUser(user);
+        } else {
+        router.push('../auth/logout');
+        }
+    };
+    fetchUser();
+    }, []);
 
     useEffect(() => {
         const fetchFlights = async () => {
@@ -127,149 +143,156 @@ const MyFlights = () => {
 
     return (
         <div className="p-4 text-white">
-            <h1 className="text-2xl font-bold mb-4">My Flights</h1>
+            {user ? (
+                <>
+                <h1 className="text-2xl font-bold mb-4 text-pink-300">My Flights</h1>
 
-            <div className="mb-4">
-                <label htmlFor="yearSelect" className="mr-2">Select Year:</label>
-                <select
-                    id="yearSelect"
-                    value={selectedYear ?? ""}
-                    onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
-                    className="p-2 border border-gray-600 bg-gray-800 text-white"
-                >
-                    <option value="">All</option>
-                    {years.map(year => (
-                        <option key={year} value={year}>{year}</option>
-                    ))}
-                </select>
-
-                <label htmlFor="monthSelect" className="ml-4 mr-2">Select Month:</label>
-                <select
-                    id="monthSelect"
-                    value={selectedMonth ?? ""}
-                    onChange={(e) => setSelectedMonth(e.target.value ? Number(e.target.value) : null)}
-                    className="p-2 border border-gray-600 bg-gray-800 text-white"
-                >
-                    <option value="">All</option>
-                    {months.map(month => (
-                        <option key={month.value} value={month.value}>{month.label}</option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-gray-800 border border-gray-700">
-                    <thead>
-                        <tr className="bg-gray-700">
-                            <th className="py-2 px-4 border-b text-left text-gray-300">
-                                Departure Airport
-                                <input
-                                    type="text"
-                                    value={searchDeparture}
-                                    onChange={(e) => setSearchDeparture(e.target.value)}
-                                    className="mt-1 p-1 border border-gray-600 bg-gray-800 text-white"
-                                    placeholder="Search..."
-                                />
-                            </th>
-                            <th className="py-2 px-4 border-b text-left text-gray-300">
-                                Arrival Airport
-                                <input
-                                    type="text"
-                                    value={searchArrival}
-                                    onChange={(e) => setSearchArrival(e.target.value)}
-                                    className="mt-1 p-1 border border-gray-600 bg-gray-800 text-white"
-                                    placeholder="Search..."
-                                />
-                            </th>
-                            <th className="py-2 px-4 border-b text-left text-gray-300">
-                                Departure Date
-                            </th>
-                            <th className="py-2 px-4 border-b text-left text-gray-300">
-                                Arrival Date
-                            </th>
-                            <th className="py-2 px-4 border-b text-left text-gray-300">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredFlights
-                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                            .map((flight) => (
-                                <tr key={flight.id} className="hover:bg-gray-600">
-                                    <td className="py-2 px-4 border-b border-gray-700">{flight.departureAirport?.name} ({flight.departureAirport?.short_form})</td>
-                                    <td className="py-2 px-4 border-b border-gray-700">{flight.arrivalAirport?.name} ({flight.arrivalAirport?.short_form})</td>
-                                    <td className="py-2 px-4 border-b border-gray-700">{new Date(flight.start_date).toLocaleString()}</td>
-                                    <td className="py-2 px-4 border-b border-gray-700">{new Date(flight.end_date).toLocaleString()}</td>
-                                    <td className="py-2 px-4 border-b border-gray-700">
-                                        <button
-                                            onClick={() => handleEdit(flight)}
-                                            className="bg-blue-600 text-white py-1 px-4 rounded mr-2"
-                                        >
-                                            Edit Flight
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(flight.id)}
-                                            className="bg-red-600 text-white py-1 px-4 rounded"
-                                        >
-                                            Delete Flight
-                                        </button>
-                                        <button
-                                            onClick={() => handleMoreInfo(flight)}
-                                            className="bg-green-600 text-white py-1 px-4 rounded ml-2"
-                                        >
-                                            More Info
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
-
-                {/* Pagination Controls */}
-                <div className="flex justify-between mt-4">
-                    <button
-                        onClick={handlePreviousPage}
-                        disabled={currentPage === 1}
-                        className="bg-gray-600 text-white py-1 px-4 rounded mr-3"
+                <div className="mb-4">
+                    <label htmlFor="yearSelect" className="mr-2">Select Year:</label>
+                    <select
+                        id="yearSelect"
+                        value={selectedYear ?? ""}
+                        onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
+                        className="p-2 border border-gray-600 bg-gray-800 text-white"
                     >
-                        <p>&lt;&lt;</p>
-                    </button>
-                    <span className="text-gray-300">
-                        Page {currentPage} of {Math.ceil(filteredFlights.length / itemsPerPage)}
-                    </span>
-                    <button
-                        onClick={handleNextPage}
-                        disabled={currentPage === Math.ceil(filteredFlights.length / itemsPerPage)}
-                        className="bg-gray-600 text-white py-1 px-4 rounded"
+                        <option value="">All</option>
+                        {years.map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
+
+                    <label htmlFor="monthSelect" className="ml-4 mr-2">Select Month:</label>
+                    <select
+                        id="monthSelect"
+                        value={selectedMonth ?? ""}
+                        onChange={(e) => setSelectedMonth(e.target.value ? Number(e.target.value) : null)}
+                        className="p-2 border border-gray-600 bg-gray-800 text-white"
                     >
-                        <p>&gt;&gt;</p>
-                    </button>
+                        <option value="">All</option>
+                        {months.map(month => (
+                            <option key={month.value} value={month.value}>{month.label}</option>
+                        ))}
+                    </select>
                 </div>
-            </div>
 
-            {filteredFlights.length === 0 && (
-                <div className="text-gray-400">No flights found for the selected filters.</div>
-            )}
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-gray-800 border border-gray-700">
+                        <thead>
+                            <tr className="bg-gray-700">
+                                <th className="py-2 px-4 border-b text-left text-gray-300">
+                                    Departure Airport
+                                    <input
+                                        type="text"
+                                        value={searchDeparture}
+                                        onChange={(e) => setSearchDeparture(e.target.value)}
+                                        className="mt-1 p-1 border border-gray-600 bg-gray-800 text-white"
+                                        placeholder="Search..."
+                                    />
+                                </th>
+                                <th className="py-2 px-4 border-b text-left text-gray-300">
+                                    Arrival Airport
+                                    <input
+                                        type="text"
+                                        value={searchArrival}
+                                        onChange={(e) => setSearchArrival(e.target.value)}
+                                        className="mt-1 p-1 border border-gray-600 bg-gray-800 text-white"
+                                        placeholder="Search..."
+                                    />
+                                </th>
+                                <th className="py-2 px-4 border-b text-left text-gray-300">
+                                    Departure Date
+                                </th>
+                                <th className="py-2 px-4 border-b text-left text-gray-300">
+                                    Arrival Date
+                                </th>
+                                <th className="py-2 px-4 border-b text-left text-gray-300">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredFlights
+                                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                                .map((flight) => (
+                                    <tr key={flight.id} className="hover:bg-gray-600">
+                                        <td className="py-2 px-4 border-b border-gray-700">{flight.departureAirport?.name} ({flight.departureAirport?.short_form})</td>
+                                        <td className="py-2 px-4 border-b border-gray-700">{flight.arrivalAirport?.name} ({flight.arrivalAirport?.short_form})</td>
+                                        <td className="py-2 px-4 border-b border-gray-700">{new Date(flight.start_date).toLocaleString()}</td>
+                                        <td className="py-2 px-4 border-b border-gray-700">{new Date(flight.end_date).toLocaleString()}</td>
+                                        <td className="py-2 px-4 border-b border-gray-700">
+                                            <button
+                                                onClick={() => handleEdit(flight)}
+                                                className="bg-pink-500 text-white py-1 px-4 rounded mr-2"
+                                            >
+                                                Edit Flight
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(flight.id)}
+                                                className="bg-red-600 text-white py-1 px-4 rounded"
+                                            >
+                                                Delete Flight
+                                            </button>
+                                            <button
+                                                onClick={() => handleMoreInfo(flight)}
+                                                className="bg-green-600 text-white py-1 px-4 rounded ml-2"
+                                            >
+                                                More Info
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
 
-            {/* Edit Flight Modal */}
-            {isEditModalOpen && selectedFlight && (
-                <EditFlightModal
-                    flight={selectedFlight}
-                    onClose={() => setIsEditModalOpen(false)}
-                    onUpdate={(updatedFlight) => {
-                        setFlights((prev) => prev.map((f) => f.id === updatedFlight.id ? updatedFlight : f));
-                        setIsEditModalOpen(false);
-                    }}
-                />
-            )}
+                    {/* Pagination Controls */}
+                    <div className="flex justify-between mt-4">
+                        <button
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                            className="bg-pink-500 text-white py-1 px-4 rounded mr-3"
+                        >
+                            <p>&lt;&lt;</p>
+                        </button>
+                        <span className="text-pink-300">
+                            Page {currentPage} of {Math.ceil(filteredFlights.length / itemsPerPage)}
+                        </span>
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage === Math.ceil(filteredFlights.length / itemsPerPage)}
+                            className="bg-pink-500 text-white py-1 px-4 rounded"
+                        >
+                            <p>&gt;&gt;</p>
+                        </button>
+                    </div>
+                </div>
 
-            {isMoreInfoModalOpen && selectedFlight && (
-                <MoreInfoModal
-                    flight={selectedFlight}
-                    onClose={() => setIsMoreInfoModalOpen(false)}
-                />
+                {filteredFlights.length === 0 && (
+                    <div className="text-gray-400">No flights found for the selected filters.</div>
+                )}
+
+                {/* Edit Flight Modal */}
+                {isEditModalOpen && selectedFlight && (
+                    <EditFlightModal
+                        flight={selectedFlight}
+                        onClose={() => setIsEditModalOpen(false)}
+                        onUpdate={(updatedFlight) => {
+                            setFlights((prev) => prev.map((f) => f.id === updatedFlight.id ? updatedFlight : f));
+                            setIsEditModalOpen(false);
+                        }}
+                    />
+                )}
+
+                {isMoreInfoModalOpen && selectedFlight && (
+                    <MoreInfoModal
+                        flight={selectedFlight}
+                        onClose={() => setIsMoreInfoModalOpen(false)}
+                    />
+                )}
+                </>
+            ) : (
+                <div className="text-center">Connect to your account before...</div>
             )}
+            
         </div>
     );
 };

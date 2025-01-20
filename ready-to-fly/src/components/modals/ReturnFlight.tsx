@@ -53,10 +53,10 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-gray-800 p-6 rounded-md shadow-md w-80">
-                <h2 className="text-xl text-white font-bold mb-4">Create Return Flight</h2>
+                <h2 className="text-xl text-pink-300 font-bold mb-4">Create Return Flight</h2>
                 <form onSubmit={handleSubmit}>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Departure Airport</label>
+                        <label className="block text-sm font-medium text-gray-600">Departure Airport</label>
                         <select
                             value={returnDepartureId}
                             onChange={(e) => setReturnDepartureId(e.target.value)}
@@ -71,7 +71,7 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Arrival Airport</label>
+                        <label className="block text-sm font-medium text-gray-600">Arrival Airport</label>
                         <select
                             value={returnArrivalId}
                             onChange={(e) => setReturnArrivalId(e.target.value)}
@@ -86,17 +86,18 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Duration (HH.MM)</label>
+                        <label className="block text-sm font-medium text-gray-600">Duration (HH.MM)</label>
                         <input
                             type="number"
                             value={duration}
                             onChange={(e) => setDuration(e.target.value)}
                             className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
+                            placeholder='00:00'
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Start Date and Time</label>
+                        <label className="block text-sm font-medium text-gray-600">Start Date and Time</label>
                         <input
                             type="datetime-local"
                             value={startDate}
@@ -106,7 +107,7 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Appreciation</label>
+                        <label className="block text-sm font-medium text-gray-600">Appreciation</label>
                         <textarea
                             id="appreciation"
                             value={appreciation}
@@ -118,17 +119,17 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                     </div>
                     <div className="flex justify-end space-x-2 mt-4">
                         <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 bg-red-600 text-white rounded-md"
-                        >
-                            Cancel
-                        </button>
-                        <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md"
+                            className="px-4 py-2 bg-pink-500 text-white rounded-md"
                         >
                             Save
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 bg-purple-500 text-white rounded-md"
+                        >
+                            Cancel
                         </button>
                     </div>
                 </form>
