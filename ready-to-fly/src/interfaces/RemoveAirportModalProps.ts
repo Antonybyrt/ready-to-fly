@@ -1,4 +1,4 @@
-import { IAirportId } from "./airport.model";
+import { IAirportId } from "../models/airport.model";
 
 export interface RemoveAirportModalProps {
     airports: IAirportId[];

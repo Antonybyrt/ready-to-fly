@@ -1,4 +1,4 @@
-import { IFlightId } from "./flight.model";
+import { IFlightId } from "../models/flight.model";
 
 export interface EditFlightModalProps {
     flight: IFlightId;
