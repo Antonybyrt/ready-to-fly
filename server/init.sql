@@ -45,3 +45,13 @@ ALTER TABLE Flight
 ALTER TABLE Flight
     ADD CONSTRAINT fk_arrival
     FOREIGN KEY (arrival_id) REFERENCES Airport(id) ON DELETE CASCADE;
+
+ALTER TABLE Flight 
+    ADD COLUMN user_id INT NOT NULL
+
+ALTER TABLE Flight
+    ADD CONSTRAINT fk_user
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
+
+UPDATE Flight
+    SET user_id = 1;

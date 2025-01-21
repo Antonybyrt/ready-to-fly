@@ -7,6 +7,7 @@ import { ServiceErrorCode } from '@/services/service.result';
 import { MoreInfoModal } from '@/components/modals/MoreInfo';
 import { useRouter } from 'next/router';
 import auth from '@/services/auth.service';
+import { IUser } from '@/models/user.model';
 
 const MyFlights = () => {
     const [flights, setFlights] = useState<IFlightId[]>([]);
@@ -23,12 +24,12 @@ const MyFlights = () => {
     const [selectedFlight, setSelectedFlight] = useState<IFlightId | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isMoreInfoModalOpen, setIsMoreInfoModalOpen] = useState(false);
-    const [user, setUser] = useState<number | null>(); 
+    const [user, setUser] = useState<IUser | null>(); 
     const router = useRouter();
 
     useEffect(() => {
     const fetchUser = async () => {
-        const user = await auth.getIdUser();
+        const user = await auth.getUser();
         if (user) {
         setUser(user);
         } else {
@@ -40,8 +41,9 @@ const MyFlights = () => {
 
     useEffect(() => {
         const fetchFlights = async () => {
+            if (!user) return;
             try {
-                const result = await FlightService.getAllFlights();
+                const result = await FlightService.getFlightsByUser(user?.id as number);
                 if (result && result.result) {
                     setFlights(result.result as IFlightId[]);
                 } else {
@@ -56,7 +58,7 @@ const MyFlights = () => {
         };
 
         fetchFlights();
-    }, []);
+    }, [user]);
 
     const handleEdit = (flight: IFlightId) => {
         setSelectedFlight(flight);

@@ -24,7 +24,7 @@ export default class auth {
         }
     }
 
-    static async isLogged(): Promise<ServiceResult<number>>{
+    static async isLogged(): Promise<ServiceResult<IUser>>{
         try {
             let token = localStorage.getItem("Token")
             if(token != null){
@@ -43,7 +43,7 @@ export default class auth {
         }
     }
 
-    static async getIdUser(): Promise<number | undefined> {
+    static async getUser(): Promise<IUser | undefined> {
         const user = await auth.isLogged();
 
         if(user) {

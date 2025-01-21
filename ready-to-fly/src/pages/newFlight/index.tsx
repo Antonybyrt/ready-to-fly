@@ -9,6 +9,7 @@ import AddAirport from '@/components/modals/AddAirport';
 import RemoveAirportModal from '@/components/modals/RemoveAirport';
 import ReturnFlightModal from '@/components/modals/ReturnFlight';
 import auth from '@/services/auth.service';
+import { IUser } from '@/models/user.model';
 
 
 const NewFlight = () => {
@@ -25,11 +26,11 @@ const NewFlight = () => {
     const [airportToDelete, setAirportToDelete] = useState('');
     const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
     const router = useRouter();
-    const [user, setUser] = useState<number | null>(); 
+    const [user, setUser] = useState<IUser | null>(); 
     
         useEffect(() => {
         const fetchUser = async () => {
-            const user = await auth.getIdUser();
+            const user = await auth.getUser();
             if (user) {
             setUser(user);
             } else {
@@ -41,6 +42,7 @@ const NewFlight = () => {
 
     useEffect(() => {
         const fetchAirports = async () => {
+            if (!user) return;
             const result = await AirportService.getAllAirports();
             if (result.errorCode === ServiceErrorCode.success && result.result) {
                 setAirports(result.result);
@@ -49,7 +51,7 @@ const NewFlight = () => {
             }
         };
         fetchAirports();
-    }, []);
+    }, [user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

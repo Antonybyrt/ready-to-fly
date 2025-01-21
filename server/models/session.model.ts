@@ -7,6 +7,8 @@ export class UserSession extends Model {
     public expirationDate!: Date;
     public token!: string;
 
+    public user?: User;
+
     public getUser!: BelongsToGetAssociationMixin<User>;
 }
 

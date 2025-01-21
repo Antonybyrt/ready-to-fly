@@ -32,6 +32,19 @@ export class FlightService {
         }
     }
 
+    static async getFlightsByUser(userId : number): Promise<ServiceResult<IFlight[] | undefined>> {
+        try {
+            const res = await axios.get(`${ApiService.baseURL}/flights/user/${userId}`);
+            if (res.status === 200) {
+                return ServiceResult.success(res.data);
+            }
+            return ServiceResult.failed();
+        } catch (err) {
+            console.log(err);
+            return ServiceResult.failed();
+        }
+    }
+
     static async getFlightById(id: number): Promise<ServiceResult<IFlight>> {
         try {
             const res = await axios.get(`${ApiService.baseURL}/flights/${id}`);
@@ -71,9 +84,9 @@ export class FlightService {
         }
     }
 
-    static async countFlights(): Promise<ServiceResult<IFlightCount>> {
+    static async countFlights(userId: number): Promise<ServiceResult<IFlightCount>> {
         try {
-            const res = await axios.get(`${ApiService.baseURL}/flights/count`);
+            const res = await axios.get(`${ApiService.baseURL}/flights/count/${userId}`);
             if (res.status === 200) {
                 return ServiceResult.success<IFlightCount>(res.data)
             }

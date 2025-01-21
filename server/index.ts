@@ -21,7 +21,7 @@ app.use('/auth', authController.buildRoutes());
 app.use('/user', userController.buildRoutes());
 
 sequelize.sync().then(() => {
-  app.listen(3306, () => {
-    console.log(`listening on port 3306`);
+  app.listen(PORT, () => {
+    console.log(`listening on port ${PORT}`);
   });
 }).catch((error) => console.error('Error connecting to database', error));

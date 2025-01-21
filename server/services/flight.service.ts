@@ -3,9 +3,9 @@ import { ServiceResult } from './service.result';
 import { Optional } from 'sequelize';
 
 export class FlightService {
-    async createFlight(data: Optional<Flight, 'id'>): Promise<ServiceResult<Flight>> {
+    async createFlight(data: Optional<Flight, 'id'>, userId: number): Promise<ServiceResult<Flight>> {
         try {
-            const flight = await Flight.create(data);
+            const flight = await Flight.create({...data, user_id: userId});
             return ServiceResult.success(flight);
         } catch (error) {
             console.error('Error creating flight:', error);
@@ -63,9 +63,34 @@ export class FlightService {
         }
     }
 
-    async updateFlight(id: number, data: Optional<Flight, 'id'>): Promise<ServiceResult<Flight>> {
+    async getFlightByUser(userId: number): Promise<ServiceResult<Flight[]>>{
         try {
-            const flight = await Flight.findByPk(id);
+            const flights = await Flight.findAll({
+                where: { user_id: userId },
+                include: [
+                    {
+                        model: Airport,
+                        as: 'departureAirport',
+                        attributes: ['name', 'short_form'],
+                    },
+                    {
+                        model: Airport,
+                        as: 'arrivalAirport',
+                        attributes: ['name', 'short_form'],
+                    },
+                ],
+            });
+
+            return ServiceResult.success(flights);
+        } catch (error) {
+            console.error('Error fetching user flights:', error);
+            return ServiceResult.failed();
+        }
+    }
+
+    async updateFlight(id: number, data: Optional<Flight, 'id'>, userId: number): Promise<ServiceResult<Flight>> {
+        try {
+            const flight = await Flight.findOne({ where: { id, user_id: userId } });
             if (flight) {
                 const updatedFlight = await flight.update(data);
                 return ServiceResult.success(updatedFlight);
@@ -78,9 +103,9 @@ export class FlightService {
         }
     }
 
-    async deleteFlight(id: number): Promise<ServiceResult<void>> {
+    async deleteFlight(id: number, userId: number): Promise<ServiceResult<void>> {
         try {
-            const flight = await Flight.findByPk(id);
+            const flight = await Flight.findOne({ where: { id, user_id: userId } });
             if (flight) {
                 const deletedFlight = await flight.destroy();
                 return ServiceResult.success(deletedFlight);
@@ -93,9 +118,9 @@ export class FlightService {
         }
     }
 
-    async countFlights(): Promise<ServiceResult<number>> {
+    async countFlights(userId: number): Promise<ServiceResult<number>> {
         try {
-            const count = await Flight.count();
+            const count = await Flight.count({ where: { user_id: userId } });
             return ServiceResult.success(count);
         } catch (error) {
             console.error('Error counting flights:', error);

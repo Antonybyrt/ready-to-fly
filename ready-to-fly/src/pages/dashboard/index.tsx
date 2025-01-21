@@ -16,6 +16,7 @@ import { ErrorService } from '@/services/error.service';
 import { config } from 'dotenv';
 import { useRouter } from 'next/router';
 import auth from '@/services/auth.service';
+import { IUser } from '@/models/user.model';
 config();
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
@@ -27,13 +28,15 @@ const Dashboard = () => {
   const [monthlyFlightData, setMonthlyFlightData] = useState<any>(null);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [totalHoursInAir, setTotalHoursInAir] = useState<number>(0);
-  const [user, setUser] = useState<number | null>(); 
+  const [user, setUser] = useState<IUser | null>(); 
     const router = useRouter();
 
     useEffect(() => {
     const fetchUser = async () => {
-        const user = await auth.getIdUser();
+        const user = await auth.getUser();
+        console.log('user', user)
         if (user) {
+          console.log(user)
         setUser(user);
         } else {
         router.push('../auth/logout');
@@ -44,8 +47,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchStatistics = async () => {
-      const flightCountResult = await FlightService.countFlights();
-      const flightsResult = await FlightService.getAllFlights();
+      if (!user) return;
+      console.log(user)
+      const flightCountResult = await FlightService.countFlights(user?.id as number);
+      const flightsResult = await FlightService.getFlightsByUser(user?.id as number);
 
       if (flightCountResult.errorCode === ServiceErrorCode.success) {
         setFlightCount(flightCountResult.result?.count ?? 0);
@@ -106,7 +111,7 @@ const Dashboard = () => {
     };
 
     fetchStatistics();
-  }, [selectedYear]);
+  }, [selectedYear, user]);
 
     return (
         <div className="p-4">

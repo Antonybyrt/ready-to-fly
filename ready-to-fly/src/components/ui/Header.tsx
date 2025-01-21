@@ -4,14 +4,15 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import auth from '@/services/auth.service';
 import { useRouter } from 'next/router';
+import { IUser } from '@/models/user.model';
 
 const Header = () => {
-  const [user, setUser] = useState<number | null>(); 
+  const [user, setUser] = useState<IUser | null>(); 
   const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await auth.getIdUser();
+      const user = await auth.getUser();
       if (user) {
         setUser(user);
       } else {

@@ -1,5 +1,6 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, HasManyGetAssociationsMixin } from 'sequelize';
 import sequelize from '../config/database.config';
+import { Flight } from './flight.model';
 
 export class User extends Model {
     public id!: number;
@@ -7,6 +8,8 @@ export class User extends Model {
     public lastName!: string;
     public email!: string;
     public pw?: string;
+
+    public getFlights!: HasManyGetAssociationsMixin<Flight>;
 }
 
 User.init({

@@ -23,4 +23,23 @@ export class SessionMiddleware {
             return false;
         }
     }
+
+    static async getUserId(req: Request): Promise<number | null> {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return null;
+        }
+        const token = authHeader.split(' ')[1];
+
+        try {
+            const user = await UserService.getUserFromSession(token);
+            if (user.errorCode === ServiceErrorCode.success && user.result) {
+                return user.result.id;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error retrieving user ID from session:', error);
+            return null;
+        }
+    }
 }

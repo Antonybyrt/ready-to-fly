@@ -1,6 +1,7 @@
 import { Model, DataTypes, BelongsToGetAssociationMixin } from 'sequelize';
 import sequelize from '../config/database.config';
 import { Airport } from './airport.model';
+import { User } from './user.model';
 
 export class Flight extends Model {
     public id!: number;
@@ -10,9 +11,11 @@ export class Flight extends Model {
     public start_date!: Date;
     public end_date!: Date;
     public appreciation?: string;
+    public user_id!: number;
 
     public getDepartureAirport!: BelongsToGetAssociationMixin<Airport>;
     public getArrivalAirport!: BelongsToGetAssociationMixin<Airport>;
+    public getUser!: BelongsToGetAssociationMixin<User>;
 }
 
 Flight.init({
@@ -54,6 +57,15 @@ Flight.init({
     appreciation: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: User,
+            key: 'id'
+        },
+        onDelete: 'CASCADE'
     }
 }, {
     sequelize,
@@ -63,3 +75,4 @@ Flight.init({
 
 Flight.belongsTo(Airport, { foreignKey: 'departure_id', as: 'departureAirport' });
 Flight.belongsTo(Airport, { foreignKey: 'arrival_id', as: 'arrivalAirport' });
+Flight.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
