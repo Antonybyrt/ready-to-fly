@@ -22,7 +22,7 @@ const Header = () => {
   }, [user]);
 
   return (
-    <header className="w-full bg-blue-700 p-4 text-white flex justify-between items-center">
+    <header className="w-full bg-blue-950 p-4 text-white flex justify-between items-center">
       <div className="flex items-center">
         <Image
           src="/corsair.png"
@@ -32,28 +32,28 @@ const Header = () => {
           className="mr-2"
         />
         <Link href="/dashboard">
-          <Title order={1} className="text-2xl font-bold font-sans">READY TO FLY</Title>
+          <Title order={1} className="text-2xl font-bold font-sans hover:text-pink-500">READY TO FLY</Title>
         </Link>
       </div>
       <nav>
         <ul className="flex space-x-4">
           <li>
             <Link href="/newFlight">
-              <p className="px-2 py-1 bg-pink-400 text-white border-2 border-pink-400 rounded-lg text-lg hover:bg-pink-500 hover:border-pink-500 transition-colors">
+              <p className="px-2 py-1 text-white border-2 border-transparent rounded-3xl text-lg hover:text-pink-500 transition-colors">
                 New Flight
               </p>
             </Link>
           </li>
           <li>
             <Link href="/myFlights">
-              <p className="px-2 py-1 bg-pink-400 text-white border-2 border-pink-400 rounded-lg text-lg hover:bg-pink-500 hover:border-pink-500 transition-colors">
+              <p className="px-2 py-1 text-white border-2 border-transparent rounded-3xl text-lg  hover:text-pink-500 transition-colors">
                 My Flights
               </p>
             </Link>
           </li>
           <li>
             <Link href="../auth/logout">
-              <p className="px-2 py-1 bg-pink-400 text-white border-2 border-pink-400 rounded-lg text-lg hover:bg-pink-500 hover:border-pink-500 transition-colors">
+              <p className="px-2 py-1 bg-pink-400 text-white border-2 border-pink-400 rounded-3xl text-lg hover:bg-pink-500 hover:border-pink-500 transition-colors">
                 Log out
               </p>
             </Link>

@@ -116,14 +116,14 @@ const Dashboard = () => {
                         <div className="bg-red-500 p-4 rounded shadow">
                             <h2 className="text-lg font-bold">Total Flights</h2>
                             <div className="bg-red-500 text-white p-4 rounded text-center">
-                                <p className="text-xl">{flightCount} flights</p>
+                                <p className="text-xl">You’ve conquered the skies <strong>{flightCount} times</strong> and came back victorious</p>
                             </div>
                         </div>
                         <div className="bg-blue-500 p-4 rounded shadow">
                             <h2 className="text-lg font-bold">Next Flight</h2>
                             <div className="bg-blue-500 text-white p-4 rounded text-center">
                                 {nextFlight ? (
-                                    <p className="text-xl">{nextFlight.arrivalAirport?.name} ({nextFlight.arrivalAirport?.short_form}) at {new Date(nextFlight.start_date).toLocaleString()}</p>
+                                    <p className="text-xl">{nextFlight.arrivalAirport?.name} ({nextFlight.arrivalAirport?.short_form}) at <strong>{new Date(nextFlight.start_date).toLocaleString()}</strong></p>
                                 ) : (
                                     <p className="text-xl">No upcoming flights</p>
                                 )}
@@ -138,7 +138,7 @@ const Dashboard = () => {
                         <div className="bg-purple-500 p-4 rounded shadow">
                             <h2 className="text-lg font-bold">Hours in the Air</h2>
                             <div className="bg-purple-500 text-white p-4 rounded text-center">
-                                <p className="text-xl">{totalHoursInAir} hours</p>
+                                <p className="text-xl">Your wings have carried you for <br /> <strong>{totalHoursInAir} hours</strong> across the horizon.</p>
                             </div>
                         </div>
                     </div>
