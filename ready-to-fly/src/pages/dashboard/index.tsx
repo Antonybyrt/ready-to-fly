@@ -138,7 +138,7 @@ const Dashboard = () => {
                         <div className="bg-purple-500 p-4 rounded shadow">
                             <h2 className="text-lg font-bold">Hours in the Air</h2>
                             <div className="bg-purple-500 text-white p-4 rounded text-center">
-                                <p className="text-xl">Your wings have carried you for <br /> <strong>{totalHoursInAir}.toFixed(2) hours</strong> across the horizon.</p>
+                                <p className="text-xl">Your wings have carried you for <br /> <strong>{totalHoursInAir.toFixed(2)} hours</strong> across the horizon.</p>
                             </div>
                         </div>
                     </div>
