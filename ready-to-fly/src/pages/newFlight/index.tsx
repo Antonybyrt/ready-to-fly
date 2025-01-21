@@ -77,7 +77,7 @@ const NewFlight = () => {
             const result = await FlightService.createFlight(flightData);
             if (result.errorCode === ServiceErrorCode.success) {
                 ErrorService.successMessage('Flight created!', '');
-                router.push('/');
+                router.push('/dashboard');
             }
         } catch (err) {
             ErrorService.errorMessage('Creation failed', '' + err);
