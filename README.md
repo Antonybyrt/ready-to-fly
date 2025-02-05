@@ -8,7 +8,7 @@
 - **Database**: Uses a relational database (PostgreSQL or MySQL, depending on configuration).
 
 ## Features
-- **User authentication**: Flight attendants can create an account and log in.
+- **User authentication**: Flight attendants can make an access request to the website and log in.
 - **Flight management**: Add, edit, and delete flight records.
 - **Upcoming flights**: View the next scheduled flights.
 - **Statistics**: Analyze flight data using interactive charts.
