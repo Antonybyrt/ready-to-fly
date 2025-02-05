@@ -61,8 +61,10 @@ Create a `.env` file in both the frontend and backend directories based on `.env
 
 ##### Backend `.env`
 ```
-DATABASE_URL=postgres://user:password@localhost:5432/readytofly
-JWT_SECRET=your_secret_key
+DATABASE_USERNAME = 'root'
+DATABASE_PASSWORD = 'root'
+HOST = '127.0.0.1'
+PORT = '3001'
 ```
 
 #### 4. Start the Application
