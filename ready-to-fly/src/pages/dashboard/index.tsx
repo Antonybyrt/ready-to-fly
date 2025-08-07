@@ -39,8 +39,10 @@ const Dashboard = () => {
   const router = useRouter();
 
   const formatDuration = (duration: number) => {
-    const hours = Math.floor(duration / 100);
-    const minutes = duration % 100;
+    // Convertir la durée en heures et minutes
+    const totalMinutes = duration;
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
     
     if (hours === 0) {
       return `${minutes}m`;
@@ -125,7 +127,13 @@ const Dashboard = () => {
           }]
         });
 
-        const totalHours = flights.reduce((acc, flight) => acc + flight.duration, 0);
+        const totalHours = flights.reduce((acc, flight) => {
+          // Convertir la durée du format HH.MM en minutes
+          const durationStr = flight.duration.toString();
+          const hours = parseInt(durationStr.split('.')[0] || '0');
+          const minutes = parseInt(durationStr.split('.')[1] || '0');
+          return acc + (hours * 60 + minutes);
+        }, 0);
         setTotalHoursInAir(totalHours);
       } else {
         ErrorService.errorMessage('Fetching flights', 'error while fetching flights');

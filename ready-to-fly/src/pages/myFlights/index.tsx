@@ -147,8 +147,10 @@ const MyFlights = () => {
     };
 
     const formatDuration = (duration: number) => {
-        const hours = Math.floor(duration / 100);
-        const minutes = duration % 100;
+        // Convertir la durée en heures et minutes
+        const totalMinutes = duration;
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
         
         if (hours === 0) {
             return `${minutes}m`;
