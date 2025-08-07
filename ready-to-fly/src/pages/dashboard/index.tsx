@@ -38,6 +38,19 @@ const Dashboard = () => {
   const { isDarkMode } = useTheme();
   const router = useRouter();
 
+  const formatDuration = (duration: number) => {
+    const hours = Math.floor(duration / 100);
+    const minutes = duration % 100;
+    
+    if (hours === 0) {
+      return `${minutes}m`;
+    } else if (minutes === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h${minutes.toString().padStart(2, '0')}m`;
+    }
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       const user = await auth.getUser();
@@ -149,7 +162,7 @@ const Dashboard = () => {
     },
     {
       title: "Total Hours",
-      value: `${totalHoursInAir}h`,
+      value: formatDuration(totalHoursInAir),
       description: "Time in the air",
       icon: Clock,
       bgColor: "bg-gradient-to-br from-purple-400 to-purple-600",

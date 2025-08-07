@@ -149,7 +149,14 @@ const MyFlights = () => {
     const formatDuration = (duration: number) => {
         const hours = Math.floor(duration / 100);
         const minutes = duration % 100;
-        return `${hours}h${minutes.toString().padStart(2, '0')}`;
+        
+        if (hours === 0) {
+            return `${minutes}m`;
+        } else if (minutes === 0) {
+            return `${hours}h`;
+        } else {
+            return `${hours}h${minutes.toString().padStart(2, '0')}m`;
+        }
     };
 
     const getFlightStatus = (flight: IFlightId) => {
