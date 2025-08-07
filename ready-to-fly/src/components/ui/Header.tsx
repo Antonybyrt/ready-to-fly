@@ -1,14 +1,20 @@
-import { Title } from '@mantine/core';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Plane, User, LogOut, Plus, Calendar, Moon, Sun } from 'lucide-react';
 import auth from '@/services/auth.service';
 import { useRouter } from 'next/router';
 import { IUser } from '@/models/user.model';
+import { Button } from './button';
+import { cn } from '@/lib/utils';
+import { useTheme } from '@/components/ThemeProvider';
 
 const Header = () => {
   const [user, setUser] = useState<IUser | null>(); 
+  const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -22,46 +28,151 @@ const Header = () => {
     fetchUser();
   }, [user]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navItems = [
+    { href: '/newFlight', label: 'New Flight', icon: Plus },
+    { href: '/myFlights', label: 'My Flights', icon: Calendar },
+  ];
+
   return (
-    <header className="w-full bg-blue-950 p-4 text-white flex justify-between items-center">
-      <div className="flex items-center">
-        <Image
-          src="/corsair.png"
-          alt="Logo"
-          width={80}
-          height={80}
-          className="mr-2"
-        />
-        <Link href="/dashboard">
-          <Title order={1} className="text-2xl font-bold font-sans hover:text-pink-500">READY TO FLY</Title>
-        </Link>
-      </div>
-      <nav>
-        <ul className="flex space-x-4">
-          <li>
-            <Link href="/newFlight">
-              <p className="px-2 py-1 text-white border-2 border-transparent rounded-3xl text-lg hover:text-pink-500 transition-colors">
-                New Flight
-              </p>
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={cn(
+        "w-full fixed top-0 z-50 transition-all duration-300",
+        isScrolled 
+          ? isDarkMode 
+            ? "bg-gray-900/90 backdrop-blur-md border-b border-gray-700 shadow-lg"
+            : "bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-lg"
+          : isDarkMode
+            ? "bg-gradient-to-r from-gray-900 to-gray-800"
+            : "bg-gradient-to-r from-blue-600 to-blue-700"
+      )}
+    >
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <motion.div 
+            className="flex items-center space-x-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <div className="relative">
+              <Image
+                src="/corsair.png"
+                alt="Logo"
+                width={60}
+                height={60}
+                className="rounded-full shadow-lg"
+              />
+              <motion.div
+                className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </div>
+            <Link href="/dashboard">
+              <motion.h1 
+                className={cn(
+                  "text-2xl font-bold transition-colors",
+                  isDarkMode 
+                    ? "text-white hover:text-pink-300"
+                    : "text-white hover:text-pink-200"
+                )}
+                whileHover={{ x: 5 }}
+              >
+                READY TO FLY
+              </motion.h1>
             </Link>
-          </li>
-          <li>
-            <Link href="/myFlights">
-              <p className="px-2 py-1 text-white border-2 border-transparent rounded-3xl text-lg  hover:text-pink-500 transition-colors">
-                My Flights
-              </p>
-            </Link>
-          </li>
-          <li>
+          </motion.div>
+
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link href={item.href}>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "transition-all duration-200 group",
+                        isDarkMode
+                          ? "text-white hover:text-pink-300 hover:bg-white/10"
+                          : "text-white hover:text-pink-200 hover:bg-white/20"
+                      )}
+                    >
+                      <Icon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </nav>
+
+          {/* User Menu and Theme Toggle */}
+          <motion.div 
+            className="flex items-center space-x-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            {/* Theme Toggle */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleTheme}
+              className={cn(
+                "transition-colors",
+                isDarkMode 
+                  ? "border-gray-600 text-gray-300 hover:bg-gray-800" 
+                  : "border-white/30 text-white hover:bg-white/20"
+              )}
+            >
+              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </Button>
+
+            {user && (
+              <motion.div
+                className="flex items-center space-x-2 text-white"
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <span className="hidden sm:block font-medium">{user.email}</span>
+              </motion.div>
+            )}
+            
             <Link href="../auth/logout">
-              <p className="px-2 py-1 bg-pink-400 text-white border-2 border-pink-400 rounded-3xl text-lg hover:bg-pink-500 hover:border-pink-500 transition-colors">
+              <Button
+                variant="destructive"
+                size="sm"
+                className="bg-pink-500 hover:bg-pink-600 text-white"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
                 Log out
-              </p>
+              </Button>
             </Link>
-          </li>
-        </ul>
-      </nav>
-    </header>
+          </motion.div>
+        </div>
+      </div>
+    </motion.header>
   );
 };
 

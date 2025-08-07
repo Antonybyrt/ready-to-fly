@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { IFlightId } from '@/models/flight.model';
 import { FlightService } from '@/services/flight.service';
 import { AirportService } from '@/services/airport.service';
@@ -6,6 +7,20 @@ import { ErrorService } from '@/services/error.service';
 import { ServiceErrorCode } from '@/services/service.result';
 import { EditFlightModalProps } from '@/interfaces/EditFlightModalProps';
 import { IAirportId, IAirport } from '@/models/airport.model';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useTheme } from '@/components/ThemeProvider';
+import { 
+    Plane, 
+    MapPin, 
+    Clock, 
+    Calendar, 
+    MessageSquare, 
+    X,
+    Save,
+    RotateCcw
+} from 'lucide-react';
 
 const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUpdate }) => {
     const [airports, setAirports] = useState<IAirport[]>([]);
@@ -14,6 +29,8 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
     const [duration, setDuration] = useState(flight.duration.toString());
     const [startDate, setStartDate] = useState(new Date(flight.start_date).toISOString().slice(0, 16));
     const [appreciation, setAppreciation] = useState(flight.appreciation);
+    const [isLoading, setIsLoading] = useState(false);
+    const { isDarkMode } = useTheme();
 
     useEffect(() => {
         const fetchAirports = async () => {
@@ -33,6 +50,7 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
 
         const startDateTime = new Date(startDate);
 
@@ -65,87 +83,247 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
             }
         } catch (err) {
             ErrorService.errorMessage('Failed to update flight', '' + err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-gray-800 p-6 rounded-md shadow-md w-80">
-                <h2 className="text-xl text-pink-300 font-bold mb-4">Edit Flight</h2>
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-600">Departure Airport</label>
-                        <select
-                            value={departureId}
-                            onChange={(e) => setDepartureId(e.target.value)}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                            required
-                        >
-                            <option value="" disabled>Select Departure Airport</option>
-                            {airports.map((airport) => (
-                                <option key={airport.id} value={airport.id}>
-                                    {airport.name} ({airport.short_form})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-600">Arrival Airport</label>
-                        <select
-                            value={arrivalId}
-                            onChange={(e) => setArrivalId(e.target.value)}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                            required
-                        >
-                            <option value="" disabled>Select Arrival Airport</option>
-                            {airports.map((airport) => (
-                                <option key={airport.id} value={airport.id}>
-                                    {airport.name} ({airport.short_form})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-600">Duration (in hours)</label>
-                        <input
-                            type="number"
-                            value={duration}
-                            onChange={(e) => setDuration(e.target.value)}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-600">Start Date and Time</label>
-                        <input
-                            type="datetime-local"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-600">Appreciation</label>
-                        <textarea
-                            id="appreciation"
-                            value={appreciation}
-                            rows={4}
-                            onChange={(e) => setAppreciation(e.target.value)}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md text-black"
-                        />
-                    </div>
-                    <div className="flex justify-end space-x-2 mt-4">
-                        <button type="submit" className="px-4 py-2 bg-pink-500 text-white rounded-md">
-                            Save
-                        </button>
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-purple-500 text-white rounded-md">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4"
+                onClick={onClose}
+            >
+                <motion.div
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    transition={{ type: "spring", duration: 0.3 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full max-w-2xl"
+                >
+                    <Card className={`shadow-2xl border-0 ${
+                        isDarkMode 
+                            ? 'bg-gray-800/95 backdrop-blur-md border-gray-700' 
+                            : 'bg-white/95 backdrop-blur-md border-gray-200'
+                    }`}>
+                        <CardHeader className="pb-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
+                                        <Plane className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className={`text-2xl font-bold ${
+                                            isDarkMode ? 'text-white' : 'text-gray-900'
+                                        }`}>
+                                            Edit Flight
+                                        </CardTitle>
+                                        <CardDescription className={
+                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                        }>
+                                            Update your flight details
+                                        </CardDescription>
+                                    </div>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={onClose}
+                                    className={`hover:bg-gray-700/50 ${
+                                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                    }`}
+                                >
+                                    <X className="w-5 h-5" />
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                {/* Departure Airport */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.1 }}
+                                >
+                                    <label className={`block text-sm font-medium mb-2 ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        <MapPin className="w-4 h-4 inline mr-2" />
+                                        Departure Airport
+                                    </label>
+                                    <select
+                                        value={departureId}
+                                        onChange={(e) => setDepartureId(e.target.value)}
+                                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
+                                            isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600 text-white' 
+                                                : 'bg-white border-gray-300 text-gray-900'
+                                        }`}
+                                        required
+                                    >
+                                        <option value="" disabled>Select a departure airport</option>
+                                        {airports.map((airport) => (
+                                            <option key={airport.id} value={airport.id}>
+                                                {airport.name} ({airport.short_form})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </motion.div>
+
+                                {/* Arrival Airport */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                >
+                                    <label className={`block text-sm font-medium mb-2 ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        <MapPin className="w-4 h-4 inline mr-2" />
+                                        Arrival Airport
+                                    </label>
+                                    <select
+                                        value={arrivalId}
+                                        onChange={(e) => setArrivalId(e.target.value)}
+                                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
+                                            isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600 text-white' 
+                                                : 'bg-white border-gray-300 text-gray-900'
+                                        }`}
+                                        required
+                                    >
+                                        <option value="" disabled>Select an arrival airport</option>
+                                        {airports.map((airport) => (
+                                            <option key={airport.id} value={airport.id}>
+                                                {airport.name} ({airport.short_form})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </motion.div>
+
+                                {/* Duration */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                >
+                                    <label className={`block text-sm font-medium mb-2 ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        <Clock className="w-4 h-4 inline mr-2" />
+                                        Duration (HH.MM)
+                                    </label>
+                                    <Input
+                                        type="text"
+                                        value={duration}
+                                        onChange={(e) => setDuration(e.target.value)}
+                                        placeholder="00.00"
+                                        className={`${
+                                            isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600 text-white' 
+                                                : 'bg-white border-gray-300 text-gray-900'
+                                        }`}
+                                        required
+                                    />
+                                </motion.div>
+
+                                {/* Start Date and Time */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.4 }}
+                                >
+                                    <label className={`block text-sm font-medium mb-2 ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        <Calendar className="w-4 h-4 inline mr-2" />
+                                        Departure Date and Time
+                                    </label>
+                                    <Input
+                                        type="datetime-local"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                        className={`${
+                                            isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600 text-white' 
+                                                : 'bg-white border-gray-300 text-gray-900'
+                                        }`}
+                                        required
+                                    />
+                                </motion.div>
+
+                                {/* Appreciation */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    <label className={`block text-sm font-medium mb-2 ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        <MessageSquare className="w-4 h-4 inline mr-2" />
+                                        Appreciation
+                                    </label>
+                                    <textarea
+                                        value={appreciation}
+                                        rows={4}
+                                        onChange={(e) => setAppreciation(e.target.value)}
+                                        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors resize-none ${
+                                            isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600 text-white' 
+                                                : 'bg-white border-gray-300 text-gray-900'
+                                        }`}
+                                        placeholder="Enter your detailed appreciation here..."
+                                    />
+                                </motion.div>
+
+                                {/* Actions */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="flex justify-end space-x-3 pt-4"
+                                >
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={onClose}
+                                        className={`${
+                                            isDarkMode 
+                                                ? 'border-gray-600 text-gray-300 hover:bg-gray-800' 
+                                                : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                    >
+                                        <RotateCcw className="w-4 h-4 mr-2" />
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white"
+                                    >
+                                        {isLoading ? (
+                                            <motion.div
+                                                animate={{ rotate: 360 }}
+                                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                className="w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"
+                                            />
+                                        ) : (
+                                            <Save className="w-4 h-4 mr-2" />
+                                        )}
+                                        {isLoading ? 'Saving...' : 'Save'}
+                                    </Button>
+                                </motion.div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
     );
 };
 

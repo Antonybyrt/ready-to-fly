@@ -1,33 +1,33 @@
-import Header from "@/components/ui/Header";
-import { MantineProvider } from '@mantine/core';
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import { useEffect } from "react";
-import router from "next/router";
-import auth from "@/services/auth.service";
+import type { AppProps } from 'next/app';
+import { useEffect } from 'react';
+import Header from '@/components/ui/Header';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { ToastProvider, useToast } from '@/components/ui/toast-container';
+import { ErrorService } from '@/services/error.service';
+import '@/styles/globals.css';
 
-export default function App({ Component, pageProps }: AppProps) {
+// Composant pour initialiser le gestionnaire de toasts
+const ToastInitializer = () => {
+  const { showToast } = useToast();
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      auth.logout();
-    };
+    // Enregistrer le gestionnaire de toasts dans le service d'erreur
+    ErrorService.setToastHandler((toast) => {
+      showToast(toast);
+    });
+  }, [showToast]);
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+  return null;
+};
 
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
-
+export default function App({ Component, pageProps }: AppProps) {
   return (
-    <MantineProvider>
-      <div className="flex flex-col flex-1">
+    <ThemeProvider>
+      <ToastProvider>
+        <ToastInitializer />
         <Header />
-        <main className="flex-1 p-6 overflow-y-auto">
-          <Component {...pageProps} />
-        </main>
-      </div>
-    </MantineProvider>
+        <Component {...pageProps} />
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
