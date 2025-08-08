@@ -51,15 +51,15 @@ const MyFlights = () => {
     const router = useRouter();
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const user = await auth.getUser();
-            if (user) {
-                setUser(user);
-            } else {
-                router.push('../auth/logout');
-            }
-        };
-        fetchUser();
+    const fetchUser = async () => {
+        const user = await auth.getUser();
+        if (user) {
+        setUser(user);
+        } else {
+        router.push('../auth/logout');
+        }
+    };
+    fetchUser();
     }, []);
 
     useEffect(() => {
@@ -69,6 +69,7 @@ const MyFlights = () => {
                 const result = await FlightService.getFlightsByUser(user?.id as number);
                 if (result && result.result) {
                     setFlights(result.result as IFlightId[]);
+                    console.log(result)
                 } else {
                     ErrorService.errorMessage('Fetching flights', 'Error while fetching flights')
                 }
@@ -147,10 +148,9 @@ const MyFlights = () => {
     };
 
     const formatDuration = (duration: number) => {
-        // Convertir la durée en heures et minutes
-        const totalMinutes = duration;
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
+        // La durée est en heures décimales (ex: 5.4 = 5h40, 1.25 = 1h15)
+        const hours = Math.floor(duration);
+        const minutes = Math.round((duration - hours) * 100); // Multiplier par 100 car 0.40 = 40 minutes
         
         if (hours === 0) {
             return `${minutes}m`;
@@ -218,7 +218,7 @@ const MyFlights = () => {
                 : 'bg-gradient-to-br from-slate-50 to-slate-100 text-gray-900'
         } pt-20`}>
             <div className="container mx-auto px-4 py-8">
-                {user ? (
+            {user ? (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -282,9 +282,9 @@ const MyFlights = () => {
                                             }`}>
                                                 Year
                                             </label>
-                                            <select
-                                                value={selectedYear ?? ""}
-                                                onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
+                    <select
+                        value={selectedYear ?? ""}
+                        onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : null)}
                                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
                                                     isDarkMode 
                                                         ? 'bg-gray-700 border-gray-600 text-white' 
@@ -292,10 +292,10 @@ const MyFlights = () => {
                                                 }`}
                                             >
                                                 <option value="">All Years</option>
-                                                {years.map(year => (
-                                                    <option key={year} value={year}>{year}</option>
-                                                ))}
-                                            </select>
+                        {years.map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
                                         </div>
 
                                         {/* Month Filter */}
@@ -305,9 +305,9 @@ const MyFlights = () => {
                                             }`}>
                                                 Month
                                             </label>
-                                            <select
-                                                value={selectedMonth ?? ""}
-                                                onChange={(e) => setSelectedMonth(e.target.value ? Number(e.target.value) : null)}
+                    <select
+                        value={selectedMonth ?? ""}
+                        onChange={(e) => setSelectedMonth(e.target.value ? Number(e.target.value) : null)}
                                                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
                                                     isDarkMode 
                                                         ? 'bg-gray-700 border-gray-600 text-white' 
@@ -315,11 +315,11 @@ const MyFlights = () => {
                                                 }`}
                                             >
                                                 <option value="">All Months</option>
-                                                {months.map(month => (
-                                                    <option key={month.value} value={month.value}>{month.label}</option>
-                                                ))}
-                                            </select>
-                                        </div>
+                        {months.map(month => (
+                            <option key={month.value} value={month.value}>{month.label}</option>
+                        ))}
+                    </select>
+                </div>
 
                                         {/* Departure Search */}
                                         <div>
@@ -330,9 +330,9 @@ const MyFlights = () => {
                                                 Departure
                                             </label>
                                             <Input
-                                                type="text"
-                                                value={searchDeparture}
-                                                onChange={(e) => setSearchDeparture(e.target.value)}
+                                        type="text"
+                                        value={searchDeparture}
+                                        onChange={(e) => setSearchDeparture(e.target.value)}
                                                 placeholder="Search by departure airport..."
                                                 className={`${
                                                     isDarkMode 
@@ -351,9 +351,9 @@ const MyFlights = () => {
                                                 Arrival
                                             </label>
                                             <Input
-                                                type="text"
-                                                value={searchArrival}
-                                                onChange={(e) => setSearchArrival(e.target.value)}
+                                        type="text"
+                                        value={searchArrival}
+                                        onChange={(e) => setSearchArrival(e.target.value)}
                                                 placeholder="Search by arrival airport..."
                                                 className={`${
                                                     isDarkMode 
@@ -391,8 +391,8 @@ const MyFlights = () => {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     <AnimatePresence>
-                                        {filteredFlights
-                                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                            {filteredFlights
+                                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                                             .map((flight, index) => {
                                                 const status = getFlightStatus(flight);
                                                 return (
@@ -497,7 +497,7 @@ const MyFlights = () => {
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                                        onClick={() => handleEdit(flight)}
+                                                onClick={() => handleEdit(flight)}
                                                                         className="flex-1"
                                                                     >
                                                                         <Edit className="w-4 h-4 mr-1" />
@@ -515,7 +515,7 @@ const MyFlights = () => {
                                                                     <Button
                                                                         variant="destructive"
                                                                         size="sm"
-                                                                        onClick={() => handleDelete(flight.id)}
+                                                onClick={() => handleDelete(flight.id)}
                                                                         className="flex-1"
                                                                     >
                                                                         <Trash2 className="w-4 h-4 mr-1" />
@@ -542,8 +542,8 @@ const MyFlights = () => {
                             >
                                 <Button
                                     variant="outline"
-                                    onClick={handlePreviousPage}
-                                    disabled={currentPage === 1}
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
                                     className={`${
                                         isDarkMode 
                                             ? 'border-gray-600 text-gray-300 hover:bg-gray-800' 
@@ -557,13 +557,13 @@ const MyFlights = () => {
                                 <span className={`font-medium ${
                                     isDarkMode ? 'text-white' : 'text-gray-900'
                                 }`}>
-                                    Page {currentPage} of {Math.ceil(filteredFlights.length / itemsPerPage)}
-                                </span>
+                            Page {currentPage} of {Math.ceil(filteredFlights.length / itemsPerPage)}
+                        </span>
                                 
                                 <Button
                                     variant="outline"
-                                    onClick={handleNextPage}
-                                    disabled={currentPage === Math.ceil(filteredFlights.length / itemsPerPage)}
+                            onClick={handleNextPage}
+                            disabled={currentPage === Math.ceil(filteredFlights.length / itemsPerPage)}
                                     className={`${
                                         isDarkMode 
                                             ? 'border-gray-600 text-gray-300 hover:bg-gray-800' 
@@ -577,23 +577,23 @@ const MyFlights = () => {
                         )}
 
                         {/* Modals */}
-                        {isEditModalOpen && selectedFlight && (
-                            <EditFlightModal
-                                flight={selectedFlight}
-                                onClose={() => setIsEditModalOpen(false)}
-                                onUpdate={(updatedFlight) => {
-                                    setFlights((prev) => prev.map((f) => f.id === updatedFlight.id ? updatedFlight : f));
-                                    setIsEditModalOpen(false);
-                                }}
-                            />
-                        )}
+                {isEditModalOpen && selectedFlight && (
+                    <EditFlightModal
+                        flight={selectedFlight}
+                        onClose={() => setIsEditModalOpen(false)}
+                        onUpdate={(updatedFlight) => {
+                            setFlights((prev) => prev.map((f) => f.id === updatedFlight.id ? updatedFlight : f));
+                            setIsEditModalOpen(false);
+                        }}
+                    />
+                )}
 
-                        {isMoreInfoModalOpen && selectedFlight && (
-                            <MoreInfoModal
-                                flight={selectedFlight}
-                                onClose={() => setIsMoreInfoModalOpen(false)}
-                            />
-                        )}
+                {isMoreInfoModalOpen && selectedFlight && (
+                    <MoreInfoModal
+                        flight={selectedFlight}
+                        onClose={() => setIsMoreInfoModalOpen(false)}
+                    />
+                )}
                     </motion.div>
                 ) : (
                     <div className="text-center">

@@ -36,13 +36,12 @@ const Dashboard = () => {
   const [totalHoursInAir, setTotalHoursInAir] = useState<number>(0);
   const [user, setUser] = useState<IUser | null>(); 
   const { isDarkMode } = useTheme();
-  const router = useRouter();
+    const router = useRouter();
 
   const formatDuration = (duration: number) => {
-    // Convertir la durée en heures et minutes
-    const totalMinutes = duration;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
+    // La durée est en heures décimales (ex: 5.4 = 5h40, 1.25 = 1h15)
+    const hours = Math.floor(duration);
+    const minutes = Math.round((duration - hours) * 100); // Multiplier par 100 car 0.40 = 40 minutes
     
     if (hours === 0) {
       return `${minutes}m`;
@@ -53,17 +52,17 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
+    useEffect(() => {
     const fetchUser = async () => {
-      const user = await auth.getUser();
-      if (user) {
+        const user = await auth.getUser();
+        if (user) {
         setUser(user);
-      } else {
+        } else {
         router.push('../auth/logout');
-      }
+        }
     };
     fetchUser();
-  }, []);
+    }, []);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -128,11 +127,8 @@ const Dashboard = () => {
         });
 
         const totalHours = flights.reduce((acc, flight) => {
-          // Convertir la durée du format HH.MM en minutes
-          const durationStr = flight.duration.toString();
-          const hours = parseInt(durationStr.split('.')[0] || '0');
-          const minutes = parseInt(durationStr.split('.')[1] || '0');
-          return acc + (hours * 60 + minutes);
+          // La durée est déjà en heures, on l'additionne directement
+          return acc + flight.duration;
         }, 0);
         setTotalHoursInAir(totalHours);
       } else {
@@ -178,14 +174,14 @@ const Dashboard = () => {
     }
   ];
 
-  return (
+    return (
     <div className={`min-h-screen transition-colors duration-300 ${
       isDarkMode 
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white' 
         : 'bg-gradient-to-br from-slate-50 to-slate-100 text-gray-900'
     } pt-20`}>
       <div className="container mx-auto px-4 py-8">
-        {user ? (
+            {user ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -231,7 +227,7 @@ const Dashboard = () => {
                         <div className="flex items-center justify-between">
                           <div className={`p-3 rounded-full ${stat.bgColor}`}>
                             <Icon className={`w-6 h-6 ${stat.textColor}`} />
-                          </div>
+                            </div>
                         </div>
                         <CardTitle className={`text-lg font-semibold ${
                           isDarkMode ? 'text-white' : 'text-gray-900'
@@ -255,7 +251,7 @@ const Dashboard = () => {
                   </motion.div>
                 );
               })}
-            </div>
+                            </div>
 
             {/* Chart Section */}
             <motion.div
@@ -300,17 +296,17 @@ const Dashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {monthlyFlightData && (
+                    {monthlyFlightData && (
                     <div className="h-[400px] relative">
-                      <Line
-                        data={monthlyFlightData}
-                        options={{
-                          maintainAspectRatio: false,
+                            <Line
+                                data={monthlyFlightData}
+                                options={{
+                                    maintainAspectRatio: false,
                           responsive: true,
-                          plugins: {
-                            legend: {
-                              display: true,
-                              position: 'top',
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
                               labels: {
                                 usePointStyle: true,
                                 padding: 20,
@@ -320,8 +316,8 @@ const Dashboard = () => {
                                 },
                                 color: isDarkMode ? '#f3f4f6' : '#374151'
                               }
-                            },
-                            tooltip: {
+                                        },
+                                        tooltip: {
                               backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                               titleColor: 'white',
                               bodyColor: 'white',
@@ -351,9 +347,9 @@ const Dashboard = () => {
                               }
                             }
                           }
-                        }}
-                      />
-                    </div>
+                                }}
+                            />
+                        </div>
                   )}
                 </CardContent>
               </Card>
@@ -398,11 +394,11 @@ const Dashboard = () => {
                 Please log in to your account to continue...
               </p>
             </motion.div>
-          </div>
-        )}
+                    </div>
+            )}
       </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default Dashboard;

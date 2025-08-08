@@ -17,10 +17,9 @@ export const MoreInfoModal = ({ flight, onClose }: { flight: IFlightId; onClose:
     const { isDarkMode } = useTheme();
 
     const formatDuration = (duration: number) => {
-        // Convertir la durée en heures et minutes
-        const totalMinutes = duration;
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
+        // La durée est en heures décimales (ex: 5.4 = 5h40, 1.25 = 1h15)
+        const hours = Math.floor(duration);
+        const minutes = Math.round((duration - hours) * 100); // Multiplier par 100 car 0.40 = 40 minutes
         
         if (hours === 0) {
             return `${minutes}m`;

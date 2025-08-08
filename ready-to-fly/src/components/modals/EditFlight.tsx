@@ -26,7 +26,13 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
     const [airports, setAirports] = useState<IAirport[]>([]);
     const [departureId, setDepartureId] = useState(flight.departure_id || '');
     const [arrivalId, setArrivalId] = useState(flight.arrival_id || '');
-    const [duration, setDuration] = useState(flight.duration.toString());
+    const [duration, setDuration] = useState(() => {
+        // Convertir la durée en heures décimales vers le format HH.MM
+        const durationValue = flight.duration;
+        const hours = Math.floor(durationValue);
+        const minutes = Math.round((durationValue - hours) * 60);
+        return `${hours}.${minutes.toString().padStart(2, '0')}`;
+    });
     const [startDate, setStartDate] = useState(new Date(flight.start_date).toISOString().slice(0, 16));
     const [appreciation, setAppreciation] = useState(flight.appreciation);
     const [isLoading, setIsLoading] = useState(false);
@@ -54,11 +60,18 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
 
         const startDateTime = new Date(startDate);
 
-        const durationStr = duration.padStart(4, '0');
-        const hours = Number(durationStr.slice(0, -2));
-        const minutes = Number(durationStr.slice(-2));
+        // Convertir la durée du format HH.MM en heures décimales
+        const durationValue = parseFloat(duration);
+        if (isNaN(durationValue)) {
+            ErrorService.errorMessage('Invalid duration format', 'Please use format HH.MM (ex: 1.50 for 1h50)');
+            setIsLoading(false);
+            return;
+        }
     
+        // Calculer la date de fin en ajoutant la durée
         const endDate = new Date(startDateTime);
+        const hours = Math.floor(durationValue);
+        const minutes = Math.round((durationValue - hours) * 60);
         endDate.setHours(startDateTime.getHours() + hours);
         endDate.setMinutes(startDateTime.getMinutes() + minutes);
 
@@ -66,7 +79,7 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
             ...flight,
             departure_id: Number(departureId),
             arrival_id: Number(arrivalId),
-            duration: Number(duration),
+            duration: durationValue, // Stocker directement en heures décimales
             start_date: startDateTime,
             end_date: endDate,
             appreciation,
@@ -220,8 +233,14 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
                                     <Input
                                         type="text"
                                         value={duration}
-                                        onChange={(e) => setDuration(e.target.value)}
-                                        placeholder="00.00"
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            // Permettre seulement les chiffres et le point
+                                            if (/^\d*\.?\d*$/.test(value) || value === '') {
+                                                setDuration(value);
+                                            }
+                                        }}
+                                        placeholder="1.50 (1h50)"
                                         className={`${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
@@ -229,6 +248,11 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
                                         }`}
                                         required
                                     />
+                                    <p className={`text-xs mt-1 ${
+                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                    }`}>
+                                        Format: HH.MM (ex: 1.50 = 1h50, 2.30 = 2h30)
+                                    </p>
                                 </motion.div>
 
                                 {/* Start Date and Time */}
