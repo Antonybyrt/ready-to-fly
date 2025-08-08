@@ -27,7 +27,7 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
     const [departureId, setDepartureId] = useState(flight.departure_id || '');
     const [arrivalId, setArrivalId] = useState(flight.arrival_id || '');
     const [duration, setDuration] = useState(() => {
-        // Convertir la durée en heures décimales vers le format HH.MM
+
         const durationValue = flight.duration;
         const hours = Math.floor(durationValue);
         const minutes = Math.round((durationValue - hours) * 60);
@@ -60,7 +60,6 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
 
         const startDateTime = new Date(startDate);
 
-        // Convertir la durée du format HH.MM en heures décimales
         const durationValue = parseFloat(duration);
         if (isNaN(durationValue)) {
             ErrorService.errorMessage('Invalid duration format', 'Please use format HH.MM (ex: 1.50 for 1h50)');
@@ -68,7 +67,6 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
             return;
         }
     
-        // Calculer la date de fin en ajoutant la durée
         const endDate = new Date(startDateTime);
         const hours = Math.floor(durationValue);
         const minutes = Math.round((durationValue - hours) * 60);
@@ -79,7 +77,7 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
             ...flight,
             departure_id: Number(departureId),
             arrival_id: Number(arrivalId),
-            duration: durationValue, // Stocker directement en heures décimales
+            duration: durationValue,
             start_date: startDateTime,
             end_date: endDate,
             appreciation,
@@ -235,7 +233,6 @@ const EditFlightModal: React.FC<EditFlightModalProps> = ({ flight, onClose, onUp
                                         value={duration}
                                         onChange={(e) => {
                                             const value = e.target.value;
-                                            // Permettre seulement les chiffres et le point
                                             if (/^\d*\.?\d*$/.test(value) || value === '') {
                                                 setDuration(value);
                                             }

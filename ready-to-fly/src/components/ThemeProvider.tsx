@@ -11,18 +11,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
-    // Retrieve saved preference from localStorage
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'dark');
     } else {
-      // Default to dark mode
       setIsDarkMode(true);
     }
   }, []);
 
   useEffect(() => {
-    // Apply theme to body
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {

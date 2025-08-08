@@ -6,6 +6,7 @@ import { ErrorService } from '@/services/error.service';
 import EditFlightModal from '@/components/modals/EditFlight';
 import { ServiceErrorCode } from '@/services/service.result';
 import { MoreInfoModal } from '@/components/modals/MoreInfo';
+import FlightCalendarModal from '@/components/modals/FlightCalendar';
 import { useRouter } from 'next/router';
 import auth from '@/services/auth.service';
 import { IUser } from '@/models/user.model';
@@ -46,6 +47,7 @@ const MyFlights = () => {
     const [selectedFlight, setSelectedFlight] = useState<IFlightId | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isMoreInfoModalOpen, setIsMoreInfoModalOpen] = useState(false);
+    const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
     const [user, setUser] = useState<IUser | null>(); 
     const { isDarkMode } = useTheme();
     const router = useRouter();
@@ -92,6 +94,11 @@ const MyFlights = () => {
     const handleMoreInfo = (flight: IFlightId) => {
         setSelectedFlight(flight);
         setIsMoreInfoModalOpen(true);
+    };
+
+    const handleCalendarClick = (flight: IFlightId) => {
+        setSelectedFlight(flight);
+        setIsCalendarModalOpen(true);
     };
 
     const handleDelete = async (flightId: number) => {
@@ -148,9 +155,8 @@ const MyFlights = () => {
     };
 
     const formatDuration = (duration: number) => {
-        // La durée est en heures décimales (ex: 5.4 = 5h40, 1.25 = 1h15)
         const hours = Math.floor(duration);
-        const minutes = Math.round((duration - hours) * 100); // Multiplier par 100 car 0.40 = 40 minutes
+        const minutes = Math.round((duration - hours) * 100);
         
         if (hours === 0) {
             return `${minutes}m`;
@@ -418,9 +424,14 @@ const MyFlights = () => {
                                                                             {status.label}
                                                                         </Badge>
                                                                     </div>
-                                                                    <CalendarDays className={`w-5 h-5 ${
-                                                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                                                    }`} />
+                                                                    <button
+                                                                        onClick={() => handleCalendarClick(flight)}
+                                                                        className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                                                            isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
+                                                                        }`}
+                                                                    >
+                                                                        <CalendarDays className="w-5 h-5" />
+                                                                    </button>
                                                                 </div>
                                                             </CardHeader>
                                                             <CardContent>
@@ -497,7 +508,7 @@ const MyFlights = () => {
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                onClick={() => handleEdit(flight)}
+                                                                        onClick={() => handleEdit(flight)}
                                                                         className="flex-1"
                                                                     >
                                                                         <Edit className="w-4 h-4 mr-1" />
@@ -515,7 +526,7 @@ const MyFlights = () => {
                                                                     <Button
                                                                         variant="destructive"
                                                                         size="sm"
-                                                onClick={() => handleDelete(flight.id)}
+                                                                        onClick={() => handleDelete(flight.id)}
                                                                         className="flex-1"
                                                                     >
                                                                         <Trash2 className="w-4 h-4 mr-1" />
@@ -592,6 +603,13 @@ const MyFlights = () => {
                     <MoreInfoModal
                         flight={selectedFlight}
                         onClose={() => setIsMoreInfoModalOpen(false)}
+                    />
+                )}
+
+                {isCalendarModalOpen && selectedFlight && (
+                    <FlightCalendarModal
+                        flight={selectedFlight}
+                        onClose={() => setIsCalendarModalOpen(false)}
                     />
                 )}
                     </motion.div>

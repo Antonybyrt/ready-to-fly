@@ -39,9 +39,8 @@ const Dashboard = () => {
     const router = useRouter();
 
   const formatDuration = (duration: number) => {
-    // La durée est en heures décimales (ex: 5.4 = 5h40, 1.25 = 1h15)
     const hours = Math.floor(duration);
-    const minutes = Math.round((duration - hours) * 100); // Multiplier par 100 car 0.40 = 40 minutes
+    const minutes = Math.round((duration - hours) * 100);
     
     if (hours === 0) {
       return `${minutes}m`;
@@ -127,7 +126,6 @@ const Dashboard = () => {
         });
 
         const totalHours = flights.reduce((acc, flight) => {
-          // La durée est déjà en heures, on l'additionne directement
           return acc + flight.duration;
         }, 0);
         setTotalHoursInAir(totalHours);

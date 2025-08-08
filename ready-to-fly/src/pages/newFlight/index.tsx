@@ -76,15 +76,13 @@ const NewFlight = () => {
     
         const startDateTime = new Date(startDate);
         
-        // Convertir la durée du format HH.MM en heures décimales
         const durationValue = parseFloat(duration);
         if (isNaN(durationValue)) {
             ErrorService.errorMessage('Invalid duration format', 'Please use format HH.MM (ex: 1.50 for 1h50)');
             setIsLoading(false);
             return;
         }
-    
-        // Calculer la date de fin en ajoutant la durée
+
         const endDate = new Date(startDateTime);
         const hours = Math.floor(durationValue);
         const minutes = Math.round((durationValue - hours) * 60);
@@ -94,7 +92,7 @@ const NewFlight = () => {
         const flightData = {
             departure_id: Number(departureId),
             arrival_id: Number(arrivalId),
-            duration: durationValue, // Stocker directement en heures décimales
+            duration: durationValue,
             start_date: startDateTime,
             end_date: endDate,
             appreciation,
@@ -158,14 +156,12 @@ const NewFlight = () => {
     const handleReturnFlightSubmit = async (flightData: any) => {
         const startDateTime = new Date(flightData.start_date);
         
-        // Convertir la durée du format HH.MM en heures décimales
         const durationValue = parseFloat(flightData.duration);
         if (isNaN(durationValue)) {
             ErrorService.errorMessage('Invalid duration format', 'Please use format HH.MM (ex: 1.50 for 1h50)');
             return;
         }
-    
-        // Calculer la date de fin en ajoutant la durée
+
         const endDate = new Date(startDateTime);
         const hours = Math.floor(durationValue);
         const minutes = Math.round((durationValue - hours) * 60);
@@ -173,7 +169,7 @@ const NewFlight = () => {
         endDate.setMinutes(startDateTime.getMinutes() + minutes);
 
         flightData.end_date = endDate;
-        flightData.duration = durationValue; // Stocker directement en heures décimales
+        flightData.duration = durationValue;
         
         try {
             const result = await FlightService.createFlight(flightData);
@@ -336,7 +332,6 @@ const NewFlight = () => {
                                                 value={duration}
                                                 onChange={(e) => {
                                                     const value = e.target.value;
-                                                    // Permettre seulement les chiffres et le point
                                                     if (/^\d*\.?\d*$/.test(value) || value === '') {
                                                         setDuration(value);
                                                     }

@@ -1,22 +1,18 @@
 import Swal from 'sweetalert2';
 
-// Interface for toasts
 interface ToastOptions {
   title: string;
   message?: string;
   duration?: number;
 }
 
-// Global toast handler
 let toastHandler: ((toast: ToastOptions & { type: 'success' | 'error' | 'warning' | 'info' }) => void) | null = null;
 
 export class ErrorService {
-  // Method to register the toast handler
   static setToastHandler(handler: typeof toastHandler) {
     toastHandler = handler;
   }
 
-  // Method to display a success toast
   static successMessage = (title: string, message?: string) => {
     if (toastHandler) {
       toastHandler({
@@ -26,7 +22,6 @@ export class ErrorService {
         duration: 4000
       });
     } else {
-      // Fallback to SweetAlert2 if no toast handler
       return Swal.fire({
         title: title,
         text: message || '',
@@ -42,7 +37,6 @@ export class ErrorService {
     }
   };
 
-  // Method to display an error toast
   static errorMessage = (title: string, message?: string) => {
     if (toastHandler) {
       toastHandler({
@@ -52,7 +46,6 @@ export class ErrorService {
         duration: 5000
       });
     } else {
-      // Fallback to SweetAlert2 if no toast handler
       return Swal.fire({
         title: title,
         text: message || '',
@@ -68,7 +61,6 @@ export class ErrorService {
     }
   };
 
-  // Method to display a warning toast
   static warningMessage = (title: string, message?: string) => {
     if (toastHandler) {
       toastHandler({
@@ -78,7 +70,6 @@ export class ErrorService {
         duration: 4000
       });
     } else {
-      // Fallback to SweetAlert2 if no toast handler
       return Swal.fire({
         title: title,
         text: message || '',
@@ -94,7 +85,6 @@ export class ErrorService {
     }
   };
 
-  // Method to display an info toast
   static infoMessage = (title: string, message?: string) => {
     if (toastHandler) {
       toastHandler({
@@ -104,7 +94,6 @@ export class ErrorService {
         duration: 4000
       });
     } else {
-      // Fallback to SweetAlert2 if no toast handler
       return Swal.fire({
         title: title,
         text: message || '',
@@ -120,7 +109,6 @@ export class ErrorService {
     }
   };
 
-  // Method to confirm deletion
   static confirmDelete = (): Promise<boolean> => {
     return Swal.fire({
       title: 'Are you sure?',
@@ -138,7 +126,6 @@ export class ErrorService {
     });
   };
 
-  // Method to confirm a generic action
   static confirmAction = (title: string, message: string, confirmText: string = 'Confirm', cancelText: string = 'Cancel'): Promise<boolean> => {
     return Swal.fire({
       title,
