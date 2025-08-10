@@ -16,7 +16,6 @@ export class AuthService {
 
             const sessionToken = SecurityUtils.randomToken();
 
-            // Calcul de la date d'expiration (30 minutes plus tard)
             const expirationDate = new Date(Date.now() + 1800000);
 
             await UserSession.create({

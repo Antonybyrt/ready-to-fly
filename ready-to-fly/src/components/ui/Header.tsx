@@ -2,31 +2,35 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plane, User, LogOut, Plus, Calendar, Moon, Sun } from 'lucide-react';
+import { Plane, User, LogOut, Plus, Calendar, Moon, Sun, Menu, X } from 'lucide-react';
 import auth from '@/services/auth.service';
 import { useRouter } from 'next/router';
 import { IUser } from '@/models/user.model';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/components/ThemeProvider';
+import { AnimatePresence } from 'framer-motion';
 
 const Header = () => {
   const [user, setUser] = useState<IUser | null>(); 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
   const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await auth.getUser();
-      if (user) {
-        setUser(user);
+      if (user) return;
+      
+      const userData = await auth.getUser();
+      if (userData) {
+        setUser(userData);
       } else {
         router.push('../auth/logout');
       }
     };
     fetchUser();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,16 +78,11 @@ const Header = () => {
                 height={60}
                 className="rounded-full shadow-lg"
               />
-              <motion.div
-                className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
             </div>
             <Link href="/dashboard">
               <motion.h1 
                 className={cn(
-                  "text-2xl font-bold transition-colors",
+                  "text-2xl font-bold transition-colors hidden sm:block",
                   isDarkMode 
                     ? "text-white hover:text-pink-300"
                     : "text-white hover:text-pink-200"
@@ -170,8 +169,67 @@ const Header = () => {
               </Button>
             </Link>
           </motion.div>
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden text-white hover:bg-white/10"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className={cn(
+              "md:hidden border-t",
+              isDarkMode 
+                ? "bg-gray-900/95 backdrop-blur-md border-gray-700" 
+                : "bg-white/95 backdrop-blur-md border-gray-200"
+            )}
+          >
+            <div className="container mx-auto px-4 py-4">
+              <nav className="flex flex-col space-y-3">
+                {navItems.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Link href={item.href}>
+                        <Button
+                          variant="ghost"
+                          className={cn(
+                            "w-full justify-start transition-all duration-200 group",
+                            isDarkMode
+                              ? "text-white hover:text-pink-300 hover:bg-white/10"
+                              : "text-gray-900 hover:text-pink-600 hover:bg-gray-100"
+                          )}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <Icon className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" />
+                          {item.label}
+                        </Button>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </nav>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };

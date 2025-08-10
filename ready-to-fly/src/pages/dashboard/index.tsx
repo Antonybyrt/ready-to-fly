@@ -22,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Plane, Clock, MapPin, TrendingUp, Calendar, Users, Zap } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
+import DestinationsPieChart from '@/components/dashboard/DestinationsPieChart';
 
 config();
 
@@ -35,6 +36,7 @@ const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [totalHoursInAir, setTotalHoursInAir] = useState<number>(0);
   const [user, setUser] = useState<IUser | null>(); 
+  const [flights, setFlights] = useState<IFlight[]>([]);
   const { isDarkMode } = useTheme();
     const router = useRouter();
 
@@ -78,6 +80,7 @@ const Dashboard = () => {
 
       if (flightsResult.errorCode === ServiceErrorCode.success) {
         const flights = flightsResult.result as IFlight[];
+        setFlights(flights);
 
         const upcomingFlights = flights.filter(flight => new Date(flight.start_date) > new Date());
         if (upcomingFlights.length > 0) {
@@ -195,7 +198,7 @@ const Dashboard = () => {
                 <h1 className={`text-4xl font-bold mb-2 ${
                     isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>
-                    Welcome, {user.email?.split('@')[0]}! ✈️
+                    Welcome {user.firstName}! ✈️
                 </h1>
                 <p className={`text-lg ${
                     isDarkMode ? 'text-gray-300' : 'text-gray-600'
@@ -251,106 +254,133 @@ const Dashboard = () => {
               })}
                             </div>
 
-            {/* Chart Section */}
+            {/* Charts Section - Side by Side */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.4 }}
+              className="mb-8"
             >
-              <Card className={`shadow-lg border-0 ${
-                isDarkMode 
-                  ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700' 
-                  : 'bg-white/80 backdrop-blur-sm border-gray-200'
-              }`}>
-                <CardHeader>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Monthly Flights Chart */}
+                <Card className={`shadow-lg border-0 ${
+                  isDarkMode 
+                    ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700' 
+                    : 'bg-white/80 backdrop-blur-sm border-gray-200'
+                }`}>
+                  <CardHeader>
                     <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle className={`text-2xl font-bold ${
-                                isDarkMode ? 'text-white' : 'text-gray-900'
-                            }`}>
-                                Monthly Flights
-                            </CardTitle>
-                            <CardDescription className={
-                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                            }>
-                                Your flight evolution throughout {selectedYear}
-                            </CardDescription>
-                        </div>
-                    <div className="flex items-center space-x-2">
-                      <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
-                          isDarkMode 
-                            ? 'bg-gray-700 border-gray-600 text-white' 
-                            : 'bg-white border-gray-300 text-gray-900'
-                        }`}
-                      >
-                        {Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - 1) + i).map(year => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
+                      <div>
+                        <CardTitle className={`text-2xl font-bold ${
+                          isDarkMode ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          Monthly Flights
+                        </CardTitle>
+                        <CardDescription className={
+                          isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                        }>
+                          Your flight evolution throughout {selectedYear}
+                        </CardDescription>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <select
+                          value={selectedYear}
+                          onChange={(e) => setSelectedYear(Number(e.target.value))}
+                          className={`px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
+                            isDarkMode 
+                              ? 'bg-gray-700 border-gray-600 text-white' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          {Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - 1) + i).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
+                  </CardHeader>
+                  <CardContent>
                     {monthlyFlightData && (
-                    <div className="h-[400px] relative">
-                            <Line
-                                data={monthlyFlightData}
-                                options={{
-                                    maintainAspectRatio: false,
-                          responsive: true,
-                                    plugins: {
-                                        legend: {
-                                            display: true,
-                                            position: 'top',
-                              labels: {
-                                usePointStyle: true,
-                                padding: 20,
-                                font: {
-                                  size: 12,
-                                  weight: 'bold'
-                                },
-                                color: isDarkMode ? '#f3f4f6' : '#374151'
-                              }
-                                        },
-                                        tooltip: {
-                              backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                              titleColor: 'white',
-                              bodyColor: 'white',
-                              borderColor: '#ec4899',
-                              borderWidth: 1,
-                              cornerRadius: 8,
-                              displayColors: false
-                            }
-                          },
-                          scales: {
-                            y: {
-                              beginAtZero: true,
-                              grid: {
-                                color: isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(0, 0, 0, 0.1)'
+                      <div className="h-[400px] relative">
+                        <Line
+                          data={monthlyFlightData}
+                          options={{
+                            maintainAspectRatio: false,
+                            responsive: true,
+                            plugins: {
+                              legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                  usePointStyle: true,
+                                  padding: 20,
+                                  font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                  },
+                                  color: isDarkMode ? '#f3f4f6' : '#374151'
+                                }
                               },
-                              ticks: {
-                                stepSize: 1,
-                                color: isDarkMode ? '#f3f4f6' : '#374151'
+                              tooltip: {
+                                backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                                titleColor: 'white',
+                                bodyColor: 'white',
+                                borderColor: '#ec4899',
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                displayColors: false
                               }
                             },
-                            x: {
-                              grid: {
-                                color: isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(0, 0, 0, 0.1)'
+                            scales: {
+                              y: {
+                                beginAtZero: true,
+                                grid: {
+                                  color: isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                  stepSize: 1,
+                                  color: isDarkMode ? '#f3f4f6' : '#374151'
+                                }
                               },
-                              ticks: {
-                                color: isDarkMode ? '#f3f4f6' : '#374151'
+                              x: {
+                                grid: {
+                                  color: isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                  color: isDarkMode ? '#f3f4f6' : '#374151'
+                                }
                               }
                             }
-                          }
-                                }}
-                            />
-                        </div>
-                  )}
-                </CardContent>
-              </Card>
+                          }}
+                        />
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Destinations Pie Chart */}
+                <Card className={`shadow-lg border-0 ${
+                  isDarkMode 
+                    ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700' 
+                    : 'bg-white/80 backdrop-blur-sm border-gray-200'
+                }`}>
+                  <CardHeader>
+                    <CardTitle className={`text-2xl font-bold ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      Top Destinations
+                    </CardTitle>
+                    <CardDescription className={
+                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                    }>
+                      Your most visited destinations
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <DestinationsPieChart flights={flights || []} />
+                  </CardContent>
+                </Card>
+              </div>
             </motion.div>
 
             {/* Footer Note */}
