@@ -281,7 +281,7 @@ const Dashboard = () => {
                         }>
                           Your flight evolution throughout {selectedYear}
                         </CardDescription>
-                      </div>
+                        </div>
                       <div className="flex items-center space-x-2">
                         <select
                           value={selectedYear}
@@ -296,21 +296,21 @@ const Dashboard = () => {
                             <option key={year} value={year}>{year}</option>
                           ))}
                         </select>
-                      </div>
+                        </div>
                     </div>
                   </CardHeader>
                   <CardContent>
                     {monthlyFlightData && (
                       <div className="h-[400px] relative">
-                        <Line
-                          data={monthlyFlightData}
-                          options={{
-                            maintainAspectRatio: false,
+                            <Line
+                                data={monthlyFlightData}
+                                options={{
+                                    maintainAspectRatio: false,
                             responsive: true,
-                            plugins: {
-                              legend: {
-                                display: true,
-                                position: 'top',
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
                                 labels: {
                                   usePointStyle: true,
                                   padding: 20,
@@ -320,8 +320,8 @@ const Dashboard = () => {
                                   },
                                   color: isDarkMode ? '#f3f4f6' : '#374151'
                                 }
-                              },
-                              tooltip: {
+                                        },
+                                        tooltip: {
                                 backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                                 titleColor: 'white',
                                 bodyColor: 'white',
@@ -351,9 +351,9 @@ const Dashboard = () => {
                                 }
                               }
                             }
-                          }}
-                        />
-                      </div>
+                                }}
+                            />
+                        </div>
                     )}
                   </CardContent>
                 </Card>

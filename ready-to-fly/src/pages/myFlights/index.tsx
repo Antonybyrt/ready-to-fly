@@ -262,14 +262,14 @@ const MyFlights = () => {
                         {/* Filters */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            animate={{ opacity: 0.5, y: 0 }}
                             transition={{ delay: 0.3 }}
                             className="mb-8"
                         >
-                            <Card className={`shadow-lg border-0 ${
+                            <Card className={`shadow-xl border-2 ${
                                 isDarkMode 
-                                    ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700' 
-                                    : 'bg-white/80 backdrop-blur-sm border-gray-200'
+                                    ? 'bg-gray-800/90 backdrop-blur-sm border-gray-600' 
+                                    : 'bg-white/95 backdrop-blur-sm border-gray-300'
                             }`}>
                                 <CardHeader>
                                     <CardTitle className={`text-xl font-bold ${
@@ -380,10 +380,10 @@ const MyFlights = () => {
                             transition={{ delay: 0.4 }}
                         >
                             {filteredFlights.length === 0 ? (
-                                <Card className={`shadow-lg border-0 text-center py-12 ${
+                                <Card className={`shadow-xl border-2 text-center py-12 ${
                                     isDarkMode 
-                                        ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700' 
-                                        : 'bg-white/80 backdrop-blur-sm border-gray-200'
+                                        ? 'bg-gray-800/90 backdrop-blur-sm border-gray-600' 
+                                        : 'bg-white/95 backdrop-blur-sm border-gray-300'
                                 }`}>
                                     <CardContent>
                                         <Plane className="w-16 h-16 mx-auto mb-4 text-gray-400" />
@@ -395,7 +395,7 @@ const MyFlights = () => {
                                     </CardContent>
                                 </Card>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                     <AnimatePresence>
                             {filteredFlights
                                 .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -407,12 +407,13 @@ const MyFlights = () => {
                                                         initial={{ opacity: 0, y: 20 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 0.1 * index }}
-                                                        whileHover={{ y: -5 }}
+                                                        whileHover={{ y: -5, scale: 1.02 }}
+                                                        className="p-1"
                                                     >
-                                                        <Card className={`h-full shadow-lg border-0 hover:shadow-xl transition-all duration-300 ${
+                                                        <Card className={`h-full shadow-xl border-2 hover:shadow-2xl transition-all duration-300 ${
                                                             isDarkMode 
-                                                                ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700' 
-                                                                : 'bg-white/80 backdrop-blur-sm border-gray-200'
+                                                                ? 'bg-gray-800/90 backdrop-blur-sm border-gray-600 hover:border-gray-500' 
+                                                                : 'bg-white/95 backdrop-blur-sm border-gray-300 hover:border-gray-400'
                                                         }`}>
                                                             <CardHeader className="pb-4">
                                                                 <div className="flex items-center justify-between">

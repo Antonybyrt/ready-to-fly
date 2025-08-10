@@ -53,7 +53,7 @@ const AddAirportModal: React.FC<AddAirportModalProps> = ({
                                     <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
                                         <Plane className="w-5 h-5 text-white" />
                                     </div>
-                                    <div>
+                    <div>
                                         <CardTitle className={`text-2xl font-bold ${
                                             isDarkMode ? 'text-white' : 'text-gray-900'
                                         }`}>
@@ -90,20 +90,20 @@ const AddAirportModal: React.FC<AddAirportModalProps> = ({
                                         isDarkMode ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
                                         <Building2 className="w-4 h-4 inline mr-2" />
-                                        Airport Name
-                                    </label>
+                            Airport Name
+                        </label>
                                     <Input
-                                        type="text"
-                                        value={newAirportName}
-                                        onChange={(e) => setNewAirportName(e.target.value)}
+                            type="text"
+                            value={newAirportName}
+                            onChange={(e) => setNewAirportName(e.target.value)}
                                         placeholder="Ex: Aéroport Charles de Gaulle"
                                         className={`${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
-                                        required
-                                    />
+                            required
+                        />
                                 </motion.div>
 
                                 {/* Short Form */}
@@ -117,11 +117,11 @@ const AddAirportModal: React.FC<AddAirportModalProps> = ({
                                     }`}>
                                         <Hash className="w-4 h-4 inline mr-2" />
                                         IATA Code
-                                    </label>
+                        </label>
                                     <Input
-                                        type="text"
-                                        value={newAirportShortForm}
-                                        onChange={(e) => setNewAirportShortForm(e.target.value)}
+                            type="text"
+                            value={newAirportShortForm}
+                            onChange={(e) => setNewAirportShortForm(e.target.value)}
                                         placeholder="Ex: CDG"
                                         maxLength={3}
                                         className={`${
@@ -129,8 +129,8 @@ const AddAirportModal: React.FC<AddAirportModalProps> = ({
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
-                                        required
-                                    />
+                            required
+                        />
                                     <p className={`text-xs mt-1 ${
                                         isDarkMode ? 'text-gray-400' : 'text-gray-500'
                                     }`}>
@@ -156,7 +156,7 @@ const AddAirportModal: React.FC<AddAirportModalProps> = ({
                                         }`}
                                     >
                                         <RotateCcw className="w-4 h-4 mr-2" />
-                                        Cancel
+                            Cancel
                                     </Button>
                                     <Button
                                         type="submit"
@@ -166,7 +166,7 @@ const AddAirportModal: React.FC<AddAirportModalProps> = ({
                                         Add
                                     </Button>
                                 </motion.div>
-                            </form>
+                </form>
                         </CardContent>
                     </Card>
                 </motion.div>

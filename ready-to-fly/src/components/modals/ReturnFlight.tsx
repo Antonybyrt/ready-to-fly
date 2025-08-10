@@ -99,7 +99,7 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                     <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
                                         <ArrowLeftRight className="w-5 h-5 text-white" />
                                     </div>
-                                    <div>
+                    <div>
                                         <CardTitle className={`text-2xl font-bold ${
                                             isDarkMode ? 'text-white' : 'text-gray-900'
                                         }`}>
@@ -138,22 +138,22 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                         <MapPin className="w-4 h-4 inline mr-2" />
                                         Departure Airport
                                     </label>
-                                    <select
-                                        value={returnDepartureId}
-                                        onChange={(e) => setReturnDepartureId(e.target.value)}
+                        <select
+                            value={returnDepartureId}
+                            onChange={(e) => setReturnDepartureId(e.target.value)}
                                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
-                                        required
-                                    >
-                                        {airports.map((airport) => (
-                                            <option key={airport.id} value={airport.id}>
-                                                {airport.name} ({airport.short_form})
-                                            </option>
-                                        ))}
-                                    </select>
+                            required
+                        >
+                            {airports.map((airport) => (
+                                <option key={airport.id} value={airport.id}>
+                                    {airport.name} ({airport.short_form})
+                                </option>
+                            ))}
+                        </select>
                                 </motion.div>
 
                                 {/* Arrival Airport */}
@@ -168,22 +168,22 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                         <MapPin className="w-4 h-4 inline mr-2" />
                                         Arrival Airport
                                     </label>
-                                    <select
-                                        value={returnArrivalId}
-                                        onChange={(e) => setReturnArrivalId(e.target.value)}
+                        <select
+                            value={returnArrivalId}
+                            onChange={(e) => setReturnArrivalId(e.target.value)}
                                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
-                                        required
-                                    >
-                                        {airports.map((airport) => (
-                                            <option key={airport.id} value={airport.id}>
-                                                {airport.name} ({airport.short_form})
-                                            </option>
-                                        ))}
-                                    </select>
+                            required
+                        >
+                            {airports.map((airport) => (
+                                <option key={airport.id} value={airport.id}>
+                                    {airport.name} ({airport.short_form})
+                                </option>
+                            ))}
+                        </select>
                                 </motion.div>
 
                                 {/* Duration */}
@@ -200,16 +200,16 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                     </label>
                                     <Input
                                         type="text"
-                                        value={duration}
-                                        onChange={(e) => setDuration(e.target.value)}
+                            value={duration}
+                            onChange={(e) => setDuration(e.target.value)}
                                         placeholder="00.00"
                                         className={`${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
-                                        required
-                                    />
+                            required
+                        />
                                 </motion.div>
 
                                 {/* Start Date and Time */}
@@ -225,16 +225,16 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                         Departure Date and Time
                                     </label>
                                     <Input
-                                        type="datetime-local"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
+                            type="datetime-local"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
                                         className={`${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
-                                        required
-                                    />
+                            required
+                        />
                                 </motion.div>
 
                                 {/* Appreciation */}
@@ -249,17 +249,17 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                         <MessageSquare className="w-4 h-4 inline mr-2" />
                                         Appreciation
                                     </label>
-                                    <textarea
-                                        value={appreciation}
-                                        rows={4}
-                                        onChange={(e) => setAppreciation(e.target.value)}
+                        <textarea
+                            value={appreciation}
+                            rows={4}
+                            onChange={(e) => setAppreciation(e.target.value)}
                                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors resize-none ${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
                                         placeholder="Enter your detailed appreciation here..."
-                                    />
+                        />
                                 </motion.div>
 
                                 {/* Actions */}
@@ -268,11 +268,11 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.6 }}
                                     className="flex justify-end space-x-3 pt-4"
-                                >
+                        >
                                     <Button
-                                        type="button"
+                            type="button"
                                         variant="outline"
-                                        onClick={onClose}
+                            onClick={onClose}
                                         className={`${
                                             isDarkMode 
                                                 ? 'border-gray-600 text-gray-300 hover:bg-gray-800' 
@@ -280,7 +280,7 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                         }`}
                                     >
                                         <RotateCcw className="w-4 h-4 mr-2" />
-                                        Cancel
+                            Cancel
                                     </Button>
                                     <Button
                                         type="submit"
@@ -299,7 +299,7 @@ const ReturnFlightModal: React.FC<ReturnFlightModalProps> = ({
                                         {isLoading ? 'Creating...' : 'Create Return Flight'}
                                     </Button>
                                 </motion.div>
-                            </form>
+                </form>
                         </CardContent>
                     </Card>
                 </motion.div>

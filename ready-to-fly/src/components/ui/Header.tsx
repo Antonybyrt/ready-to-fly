@@ -71,15 +71,15 @@ const Header = () => {
             transition={{ type: "spring", stiffness: 300 }}
           >
             <div className="relative">
-              <Image
-                src="/corsair.png"
-                alt="Logo"
+        <Image
+          src="/corsair.png"
+          alt="Logo"
                 width={60}
                 height={60}
                 className="rounded-full shadow-lg"
-              />
+        />
             </div>
-            <Link href="/dashboard">
+        <Link href="/dashboard">
               <motion.h1 
                 className={cn(
                   "text-2xl font-bold transition-colors hidden sm:block",
@@ -118,7 +118,7 @@ const Header = () => {
                       <Icon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                       {item.label}
                     </Button>
-                  </Link>
+            </Link>
                 </motion.div>
               );
             })}
@@ -225,7 +225,7 @@ const Header = () => {
                     </motion.div>
                   );
                 })}
-              </nav>
+      </nav>
             </div>
           </motion.div>
         )}

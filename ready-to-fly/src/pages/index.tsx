@@ -13,29 +13,29 @@ import { Plane, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const router = useRouter();
+  const router = useRouter();
 
     const onSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
         try {
             const result = await auth.login(email, password);
             if (result) {
                 router.push('/dashboard');
-            } else {
-                ErrorService.errorMessage("Error while connecting", "Email or password incorrect");
-            }
+    } else {
+      ErrorService.errorMessage("Error while connecting", "Email or password incorrect");
+    }
         } catch (err) {
             ErrorService.errorMessage("Error while connecting", err as string);
         } finally {
             setLoading(false);
-        }
+  }
     };
 
-    return (
+  return (
         <div className="min-h-screen flex flex-col justify-center items-center px-4 bg-gradient-to-br from-blue-950 via-blue-900 to-purple-900 relative overflow-hidden">
             {/* Animated background elements */}
             <motion.div
@@ -79,7 +79,7 @@ const LoginPage = () => {
                         >
                             <Plane className="w-8 h-8 text-white" />
                         </motion.div>
-                        <div>
+        <div>
                             <CardTitle className="text-3xl font-bold text-white mb-2">Ready to Soar! ✈️</CardTitle>
                             <CardDescription className="text-white/80">Connect to your Ready to Fly account</CardDescription>
                         </div>
@@ -96,15 +96,15 @@ const LoginPage = () => {
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
                                     <Input
-                                        id="email"
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
                                         className="pl-10 bg-white/10 border-white/20 text-white placeholder-white/50 focus:border-pink-400 focus:ring-pink-400"
-                                        placeholder="Enter your email"
+            placeholder="Enter your email"
                                         required
-                                    />
-                                </div>
+          />
+        </div>
                             </motion.div>
 
                             <motion.div
@@ -116,14 +116,14 @@ const LoginPage = () => {
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
                                     <Input
-                                        id="password"
+            id="password"
                                         type={showPassword ? "text" : "password"}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
                                         className="pl-10 bg-white/10 border-white/20 text-white placeholder-white/50 focus:border-pink-400 focus:ring-pink-400"
-                                        placeholder="Enter your password"
+            placeholder="Enter your password"
                                         required
-                                    />
+          />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
@@ -131,7 +131,7 @@ const LoginPage = () => {
                                     >
                                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                     </button>
-                                </div>
+        </div>
                             </motion.div>
 
                             <motion.div
@@ -140,7 +140,7 @@ const LoginPage = () => {
                                 transition={{ delay: 0.5 }}
                             >
                                 <Button
-                                    type="submit"
+          type="submit"
                                     className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
                                     disabled={loading}
                                 >
@@ -154,7 +154,7 @@ const LoginPage = () => {
                                     {loading ? "Taking off..." : "Let's Fly!"}
                                 </Button>
                             </motion.div>
-                        </form>
+      </form>
 
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -169,14 +169,14 @@ const LoginPage = () => {
                                     className="text-pink-300 hover:text-pink-200 underline transition-colors"
                                 >
                                     Request access
-                                </a>
-                            </p>
+        </a>
+      </p>
                         </motion.div>
                     </CardContent>
                 </Card>
             </motion.div>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default LoginPage;

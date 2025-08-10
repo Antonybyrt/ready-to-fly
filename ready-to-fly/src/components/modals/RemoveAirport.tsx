@@ -49,7 +49,7 @@ const RemoveAirportModal: React.FC<RemoveAirportModalProps> = ({
                                     <div className="w-10 h-10 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center">
                                         <Trash2 className="w-5 h-5 text-white" />
                                     </div>
-                                    <div>
+                    <div>
                                         <CardTitle className={`text-2xl font-bold ${
                                             isDarkMode ? 'text-white' : 'text-gray-900'
                                         }`}>
@@ -115,24 +115,24 @@ const RemoveAirportModal: React.FC<RemoveAirportModalProps> = ({
                                     }`}>
                                         <Plane className="w-4 h-4 inline mr-2" />
                                         Select an airport to remove
-                                    </label>
-                                    <select
-                                        value={airportToDelete}
-                                        onChange={(e) => setAirportToDelete(e.target.value)}
+                        </label>
+                        <select
+                            value={airportToDelete}
+                            onChange={(e) => setAirportToDelete(e.target.value)}
                                         className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors ${
                                             isDarkMode 
                                                 ? 'bg-gray-700 border-gray-600 text-white' 
                                                 : 'bg-white border-gray-300 text-gray-900'
                                         }`}
-                                        required
-                                    >
-                                        <option value="">Select an airport</option>
-                                        {airports.map((airport) => (
-                                            <option key={airport.id} value={airport.id}>
-                                                {airport.name} ({airport.short_form})
-                                            </option>
-                                        ))}
-                                    </select>
+                            required
+                        >
+                            <option value="">Select an airport</option>
+                            {airports.map((airport) => (
+                                <option key={airport.id} value={airport.id}>
+                                    {airport.name} ({airport.short_form})
+                                </option>
+                            ))}
+                        </select>
                                 </motion.div>
 
                                 {/* Actions */}
@@ -153,7 +153,7 @@ const RemoveAirportModal: React.FC<RemoveAirportModalProps> = ({
                                         }`}
                                     >
                                         <RotateCcw className="w-4 h-4 mr-2" />
-                                        Cancel
+                            Cancel
                                     </Button>
                                     <Button
                                         type="submit"
@@ -164,7 +164,7 @@ const RemoveAirportModal: React.FC<RemoveAirportModalProps> = ({
                                         Remove
                                     </Button>
                                 </motion.div>
-                            </form>
+                </form>
                         </CardContent>
                     </Card>
                 </motion.div>
