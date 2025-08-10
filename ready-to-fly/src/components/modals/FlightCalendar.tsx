@@ -47,10 +47,9 @@ const FlightCalendarModal: React.FC<FlightCalendarModalProps> = ({ flight, onClo
     };
 
     const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('fr-FR', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
     };
 
     const monthNames = [
@@ -149,11 +148,7 @@ const FlightCalendarModal: React.FC<FlightCalendarModalProps> = ({ flight, onClo
                                         <span className={`text-sm ${
                                             isDarkMode ? 'text-gray-300' : 'text-gray-700'
                                         }`}>
-                                            {flightDate.toLocaleDateString('fr-FR', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric'
-                                            })}
+                                            {`${String(flightDate.getUTCDate()).padStart(2, '0')}/${String(flightDate.getUTCMonth() + 1).padStart(2, '0')}/${flightDate.getUTCFullYear()}`}
                                         </span>
                                     </div>
                                 </div>

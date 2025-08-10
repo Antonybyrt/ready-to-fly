@@ -181,6 +181,18 @@ const MyFlights = () => {
         }
     };
 
+    // Fonction pour formater la date en UTC (sans conversion timezone)
+    const formatDateUTC = (date: Date | string) => {
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        const year = dateObj.getUTCFullYear();
+        const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getUTCDate()).padStart(2, '0');
+        const hours = String(dateObj.getUTCHours()).padStart(2, '0');
+        const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
+        
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    };
+
     const years = Array.from({ length: 6 }, (_, i) => (new Date().getFullYear() - 1) + i);
     const months = [
         { value: 1, label: 'January' },
@@ -480,13 +492,7 @@ const MyFlights = () => {
                                                                         <span className={`font-medium ${
                                                                             isDarkMode ? 'text-white' : 'text-gray-900'
                                                                         }`}>
-                                                                            {new Date(flight.start_date).toLocaleDateString('fr-FR', {
-                                                                                day: '2-digit',
-                                                                                month: '2-digit',
-                                                                                year: 'numeric',
-                                                                                hour: '2-digit',
-                                                                                minute: '2-digit'
-                                                                            })}
+                                                                            {formatDateUTC(flight.start_date)}
                                                                         </span>
                                                                     </div>
                                                                     <div className="flex items-center justify-between">
