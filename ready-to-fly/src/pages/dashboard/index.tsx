@@ -89,11 +89,26 @@ const Dashboard = () => {
         }
 
         const destinationCounts: { [key: string]: number } = {};
+        
+        const corsairIATACodes = [
+          'PTP', 'FDF', 'RUN', 'MRU', 'TNR', 'DZA', 'BKO', 'ABJ', 'COO', 'MRS', 'LYS', 'BOD', 'NTE'
+        ];
+        
+        const isThiboultLaura = user?.firstName?.toLowerCase() === 'laura' && 
+                                user?.lastName?.toLowerCase() === 'thiboult';
+        
         flights.forEach(flight => {
           const arrivalAirport = flight.arrivalAirport;
           if (arrivalAirport?.short_form !== 'ORY') {
-            const destinationKey = `${arrivalAirport?.name} (${arrivalAirport?.short_form})`;
-            destinationCounts[destinationKey] = (destinationCounts[destinationKey] || 0) + 1;
+            if (isThiboultLaura) {
+              if (arrivalAirport?.short_form && corsairIATACodes.includes(arrivalAirport.short_form)) {
+                const destinationKey = `${arrivalAirport?.name} (${arrivalAirport.short_form})`;
+                destinationCounts[destinationKey] = (destinationCounts[destinationKey] || 0) + 1;
+              }
+            } else {
+              const destinationKey = `${arrivalAirport?.name} (${arrivalAirport?.short_form})`;
+              destinationCounts[destinationKey] = (destinationCounts[destinationKey] || 0) + 1;
+            }
           }
         });
 
@@ -158,9 +173,13 @@ const Dashboard = () => {
       textColor: "text-white"
     },
     {
-      title: "Favorite Destination",
+      title: user?.firstName?.toLowerCase() === 'laura' && user?.lastName?.toLowerCase() === 'thiboult' 
+        ? "Favorite Corsair Destination" 
+        : "Favorite Destination",
       value: mostPopularDestination || "No data",
-      description: "Your favorite destination",
+      description: user?.firstName?.toLowerCase() === 'laura' && user?.lastName?.toLowerCase() === 'thiboult'
+        ? "Your favorite Corsair destination"
+        : "Your favorite destination",
       icon: MapPin,
       bgColor: "bg-gradient-to-br from-green-400 to-green-600",
       textColor: "text-white"
@@ -368,16 +387,22 @@ const Dashboard = () => {
                     <CardTitle className={`text-2xl font-bold ${
                       isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>
-                      Top Destinations
+                      {user?.firstName?.toLowerCase() === 'laura' && user?.lastName?.toLowerCase() === 'thiboult' 
+                        ? 'Top Destinations Corsair' 
+                        : 'Top Destinations'
+                      }
                     </CardTitle>
                     <CardDescription className={
                       isDarkMode ? 'text-gray-400' : 'text-gray-600'
                     }>
-                      Your most visited destinations
+                      {user?.firstName?.toLowerCase() === 'laura' && user?.lastName?.toLowerCase() === 'thiboult'
+                        ? 'Your most visited Corsair destinations'
+                        : 'Your most visited destinations'
+                      }
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <DestinationsPieChart flights={flights || []} />
+                                                    <DestinationsPieChart flights={flights || []} user={user} />
                   </CardContent>
                 </Card>
               </div>

@@ -14,10 +14,19 @@ ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
 interface DestinationsPieChartProps {
   flights: IFlight[];
+  user?: {
+    firstName?: string;
+    lastName?: string;
+  } | null;
 }
 
-const DestinationsPieChart: React.FC<DestinationsPieChartProps> = ({ flights }) => {
+const DestinationsPieChart: React.FC<DestinationsPieChartProps> = ({ flights, user }) => {
   const { isDarkMode } = useTheme();
+
+  const corsairIATACodes = ['PTP', 'FDF', 'RUN', 'MRU', 'TNR', 'DZA', 'BKO', 'ABJ', 'COO', 'MRS', 'LYS', 'BOD', 'NTE'];
+
+  const isThiboultLaura = user?.firstName?.toLowerCase() === 'laura' && 
+                          user?.lastName?.toLowerCase() === 'thiboult';
 
   const processDestinationsData = () => {
     const destinationCounts = new Map<string, number>();
@@ -25,7 +34,15 @@ const DestinationsPieChart: React.FC<DestinationsPieChartProps> = ({ flights }) 
     flights.forEach(flight => {
       if (flight.arrivalAirport?.name) {
         const destination = flight.arrivalAirport.name;
-        destinationCounts.set(destination, (destinationCounts.get(destination) || 0) + 1);
+        
+        if (isThiboultLaura) {
+          const arrivalIATA = flight.arrivalAirport?.short_form;
+          if (arrivalIATA && corsairIATACodes.includes(arrivalIATA)) {
+            destinationCounts.set(destination, (destinationCounts.get(destination) || 0) + 1);
+          }
+        } else {
+          destinationCounts.set(destination, (destinationCounts.get(destination) || 0) + 1);
+        }
       }
     });
 
@@ -106,7 +123,7 @@ const DestinationsPieChart: React.FC<DestinationsPieChartProps> = ({ flights }) 
       },
       title: {
         display: true,
-        text: 'Top Destinations',
+        text: isThiboultLaura ? 'Top Destinations Corsair' : 'Top Destinations',
         color: isDarkMode ? '#F9FAFB' : '#111827',
         font: {
           size: 16,
@@ -123,7 +140,12 @@ const DestinationsPieChart: React.FC<DestinationsPieChartProps> = ({ flights }) 
   if (destinationsData.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-500">
-        <p>Aucune destination disponible</p>
+        <p>
+          {isThiboultLaura 
+            ? 'Aucune destination Corsair disponible' 
+            : 'Aucune destination disponible'
+          }
+        </p>
       </div>
     );
   }
