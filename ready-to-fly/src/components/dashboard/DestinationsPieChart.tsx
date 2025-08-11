@@ -48,11 +48,11 @@ const DestinationsPieChart: React.FC<DestinationsPieChartProps> = ({ flights, us
 
     const sortedDestinations = Array.from(destinationCounts.entries())
       .sort(([, a], [, b]) => b - a)
-      .slice(0, 5);
+      .slice(0, 8);
 
     if (sortedDestinations.length < destinationCounts.size) {
       const otherCount = Array.from(destinationCounts.values())
-        .slice(5)
+        .slice(8)
         .reduce((sum, count) => sum + count, 0);
       
       if (otherCount > 0) {
@@ -72,6 +72,8 @@ const DestinationsPieChart: React.FC<DestinationsPieChartProps> = ({ flights, us
     '#96CEB4',
     '#FFEAA7',
     '#DDA0DD',
+    '#FF8C42',
+    '#6C5CE7',
   ];
 
   const chartData = {
