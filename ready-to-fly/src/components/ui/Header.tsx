@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plane, User, LogOut, Plus, Calendar, Moon, Sun, Menu, X } from 'lucide-react';
+import { Plane, User, LogOut, Plus, Calendar, Moon, Sun, Menu, X, CalendarDays } from 'lucide-react';
 import auth from '@/services/auth.service';
 import { useRouter } from 'next/router';
 import { IUser } from '@/models/user.model';
@@ -44,6 +44,7 @@ const Header = () => {
   const navItems = [
     { href: '/newFlight', label: 'New Flight', icon: Plus },
     { href: '/myFlights', label: 'My Flights', icon: Calendar },
+    { href: '/myCalendar', label: 'My Calendar', icon: CalendarDays },
   ];
 
   return (
