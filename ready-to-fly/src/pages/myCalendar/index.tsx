@@ -84,7 +84,7 @@ const MyCalendar = () => {
     };
 
     const formatDate = (date: Date) => {
-        return date.toLocaleDateString('fr-FR', { 
+        return date.toLocaleDateString('en-US', { 
             day: '2-digit', 
             month: '2-digit', 
             year: 'numeric' 
@@ -92,7 +92,7 @@ const MyCalendar = () => {
     };
 
     const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('fr-FR', { 
+        return date.toLocaleTimeString('en-US', { 
             hour: '2-digit', 
             minute: '2-digit' 
         });
@@ -117,11 +117,11 @@ const MyCalendar = () => {
         const endDate = new Date(flight.end_date);
 
         if (now < flightDate) {
-            return { status: 'upcoming', label: 'À venir', color: 'bg-blue-500' };
+            return { status: 'upcoming', label: 'Upcoming', color: 'bg-blue-500' };
         } else if (now >= flightDate && now <= endDate) {
-            return { status: 'in-progress', label: 'En cours', color: 'bg-green-500' };
+            return { status: 'in-progress', label: 'In Flight', color: 'bg-green-500' };
         } else {
-            return { status: 'completed', label: 'Terminé', color: 'bg-gray-500' };
+            return { status: 'completed', label: 'Landed', color: 'bg-gray-500' };
         }
     };
 
@@ -139,11 +139,11 @@ const MyCalendar = () => {
     };
 
     const monthNames = [
-        'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
-    const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
 
@@ -200,12 +200,12 @@ const MyCalendar = () => {
                             <h1 className={`text-4xl font-bold text-center mb-2 ${
                                 isDarkMode ? 'text-white' : 'text-gray-900'
                             }`}>
-                                Mon Calendrier
+                                My Flight Calendar ✈️
                             </h1>
                             <p className={`text-lg text-center ${
                                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
                             }`}>
-                                Visualisez tous vos vols dans un calendrier
+                                Time to take off and explore your journey timeline!
                             </p>
                         </motion.div>
 
@@ -233,7 +233,7 @@ const MyCalendar = () => {
                                             }`}
                                         >
                                             <ChevronLeft className="w-4 h-4 mr-1" />
-                                            Précédent
+                                            Previous
                                         </Button>
                                         
                                         <CardTitle className={`text-2xl font-bold ${
@@ -251,7 +251,7 @@ const MyCalendar = () => {
                                                     : 'border-gray-300 text-gray-700 hover:bg-gray-100'
                                             }`}
                                         >
-                                            Suivant
+                                            Next
                                             <ChevronRight className="w-4 h-4 ml-1" />
                                         </Button>
                                     </div>
@@ -381,12 +381,12 @@ const MyCalendar = () => {
                             <h2 className={`text-xl font-semibold mb-2 ${
                                 isDarkMode ? 'text-white' : 'text-gray-900'
                             }`}>
-                                Connexion Requise
+                                Login Required
                             </h2>
                             <p className={
                                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
                             }>
-                                Veuillez vous connecter à votre compte pour continuer...
+                                Please log in to your account to continue...
                             </p>
                         </motion.div>
                     </div>
