@@ -55,12 +55,12 @@ export const CalendarPromptModal = ({ flight, onClose, onAddToCalendar, onSkip }
                         <CardTitle className={`text-xl font-bold ${
                             isDarkMode ? 'text-white' : 'text-gray-900'
                         }`}>
-                            Add to Calendar?
+                            Add to Google Calendar?
                         </CardTitle>
                         <CardDescription className={
                             isDarkMode ? 'text-gray-400' : 'text-gray-600'
                         }>
-                            Would you like to add this flight to your Apple Calendar?
+                            Would you like to add this flight to your Google Calendar? This will open Google Calendar in a new tab with the event pre-filled.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">

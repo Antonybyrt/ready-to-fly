@@ -192,61 +192,23 @@ const NewFlight = () => {
         }
     };
 
-    const generateAppleCalendarLink = (flight: any, departureAirport: any, arrivalAirport: any) => {
+    const addToGoogleCalendar = (flight: any, departureAirport: any, arrivalAirport: any) => {
         const startDate = new Date(flight.start_date);
         const endDate = new Date(flight.end_date);
         
-        const formatDate = (date: Date) => {
+        const formatDateForGoogle = (date: Date) => {
             return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
         };
         
-        const escapeText = (text: string) => {
-            return text
-                .replace(/[\\;,]/g, '\\$&')
-                .replace(/\n/g, '\\n')
-                .replace(/\r/g, '\\r');
-        };
+        const title = encodeURIComponent(`Flight: ${departureAirport?.short_form} → ${arrivalAirport?.short_form}`);
+        const description = encodeURIComponent(`Flight from ${departureAirport?.name} to ${arrivalAirport?.name}\nDuration: ${formatDuration(flight.duration)}`);
+        const location = encodeURIComponent(`${departureAirport?.name} → ${arrivalAirport?.name}`);
+        const startTime = formatDateForGoogle(startDate);
+        const endTime = formatDateForGoogle(endDate);
         
-        const title = escapeText(`Flight: ${departureAirport?.short_form} → ${arrivalAirport?.short_form}`);
-        const description = escapeText(`Flight from ${departureAirport?.name} to ${arrivalAirport?.name}\nDuration: ${formatDuration(flight.duration)}`);
-        const location = escapeText(`${departureAirport?.name} → ${arrivalAirport?.name}`);
-        const startTime = formatDate(startDate);
-        const endTime = formatDate(endDate);
+        const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${description}&location=${location}&dates=${startTime}/${endTime}`;
         
-        const icsContent = [
-            'BEGIN:VCALENDAR',
-            'VERSION:2.0',
-            'PRODID:-//Ready to Fly//Flight Calendar//EN',
-            'CALSCALE:GREGORIAN',
-            'METHOD:PUBLISH',
-            'BEGIN:VEVENT',
-            `UID:${Date.now()}@readytofly.com`,
-            `DTSTAMP:${formatDate(new Date())}`,
-            `DTSTART:${startTime}`,
-            `DTEND:${endTime}`,
-            `SUMMARY:${title}`,
-            `DESCRIPTION:${description}`,
-            `LOCATION:${location}`,
-            'STATUS:CONFIRMED',
-            'SEQUENCE:0',
-            'END:VEVENT',
-            'END:VCALENDAR'
-        ].join('\r\n');
-        
-        return icsContent;
-    };
-
-    const downloadCalendarFile = (flight: any, departureAirport: any, arrivalAirport: any) => {
-        const icsContent = generateAppleCalendarLink(flight, departureAirport, arrivalAirport);
-        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `flight-${departureAirport?.short_form}-${arrivalAirport?.short_form}.ics`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        window.open(googleCalendarUrl, '_blank');
     };
     const formatDuration = (duration: number) => {
         const hours = Math.floor(duration);
@@ -598,7 +560,7 @@ const NewFlight = () => {
                                 flight={createdFlight}
                                 onClose={() => setShowCalendarPrompt(false)}
                                 onAddToCalendar={() => {
-                                    downloadCalendarFile(
+                                    addToGoogleCalendar(
                                         createdFlight,
                                         createdFlight.departureAirport,
                                         createdFlight.arrivalAirport
