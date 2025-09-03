@@ -512,6 +512,19 @@ const MyFlights = () => {
                                                                             {formatDuration(flight.duration)}
                                                                         </span>
                                                                     </div>
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span className={`text-sm ${
+                                                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                                                        }`}>
+                                                                            <Calendar className="w-4 h-4 inline mr-1" />
+                                                                            Arrival
+                                                                        </span>
+                                                                        <span className={`font-medium ${
+                                                                            isDarkMode ? 'text-white' : 'text-gray-900'
+                                                                        }`}>
+                                                                            {formatDateUTC(flight.end_date)}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
 
                                                                 {/* Actions */}

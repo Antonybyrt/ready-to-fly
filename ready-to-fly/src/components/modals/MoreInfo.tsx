@@ -144,50 +144,81 @@ export const MoreInfoModal = ({ flight, onClose }: { flight: IFlightId; onClose:
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                className="space-y-4"
                             >
-                                <div className={`p-4 rounded-lg border ${
-                                    isDarkMode 
-                                        ? 'bg-gray-700/50 border-gray-600' 
-                                        : 'bg-gray-50 border-gray-200'
+                                <h3 className={`text-lg font-semibold mb-3 ${
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
                                 }`}>
-                                    <div className="flex items-center mb-2">
-                                        <Calendar className={`w-4 h-4 mr-2 ${
-                                            isDarkMode ? 'text-pink-400' : 'text-pink-500'
-                                        }`} />
-                                        <span className={`font-medium ${
-                                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                        }`}>
-                                            Departure Date
-                                        </span>
-                                    </div>
-                                    <p className={`font-semibold ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
+                                    <Calendar className="w-5 h-5 inline mr-2" />
+                                    Schedule
+                                </h3>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className={`p-4 rounded-lg border ${
+                                        isDarkMode 
+                                            ? 'bg-gray-700/50 border-gray-600' 
+                                            : 'bg-gray-50 border-gray-200'
                                     }`}>
-                                        {formatDateUTC(flight.start_date)}
-                                    </p>
-                                </div>
+                                        <div className="flex items-center mb-2">
+                                            <Calendar className={`w-4 h-4 mr-2 ${
+                                                isDarkMode ? 'text-pink-400' : 'text-pink-500'
+                                            }`} />
+                                            <span className={`font-medium ${
+                                                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                            }`}>
+                                                Departure
+                                            </span>
+                                        </div>
+                                        <p className={`font-semibold ${
+                                            isDarkMode ? 'text-white' : 'text-gray-900'
+                                        }`}>
+                                            {formatDateUTC(flight.start_date)}
+                                        </p>
+                                    </div>
 
-                                <div className={`p-4 rounded-lg border ${
-                                    isDarkMode 
-                                        ? 'bg-gray-700/50 border-gray-600' 
-                                        : 'bg-gray-50 border-gray-200'
-                                }`}>
-                                    <div className="flex items-center mb-2">
-                                        <Clock className={`w-4 h-4 mr-2 ${
-                                            isDarkMode ? 'text-pink-400' : 'text-pink-500'
-                                        }`} />
-                                        <span className={`font-medium ${
-                                            isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                        }`}>
-                                            Duration
-                                        </span>
-                                    </div>
-                                    <p className={`font-semibold ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
+                                    <div className={`p-4 rounded-lg border ${
+                                        isDarkMode 
+                                            ? 'bg-gray-700/50 border-gray-600' 
+                                            : 'bg-gray-50 border-gray-200'
                                     }`}>
-                                        {formatDuration(flight.duration)}
-                                    </p>
+                                        <div className="flex items-center mb-2">
+                                            <Calendar className={`w-4 h-4 mr-2 ${
+                                                isDarkMode ? 'text-pink-400' : 'text-pink-500'
+                                            }`} />
+                                            <span className={`font-medium ${
+                                                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                            }`}>
+                                                Arrival
+                                            </span>
+                                        </div>
+                                        <p className={`font-semibold ${
+                                            isDarkMode ? 'text-white' : 'text-gray-900'
+                                        }`}>
+                                            {formatDateUTC(flight.end_date)}
+                                        </p>
+                                    </div>
+
+                                    <div className={`p-4 rounded-lg border ${
+                                        isDarkMode 
+                                            ? 'bg-gray-700/50 border-gray-600' 
+                                            : 'bg-gray-50 border-gray-200'
+                                    }`}>
+                                        <div className="flex items-center mb-2">
+                                            <Clock className={`w-4 h-4 mr-2 ${
+                                                isDarkMode ? 'text-pink-400' : 'text-pink-500'
+                                            }`} />
+                                            <span className={`font-medium ${
+                                                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                            }`}>
+                                                Duration
+                                            </span>
+                                        </div>
+                                        <p className={`font-semibold ${
+                                            isDarkMode ? 'text-white' : 'text-gray-900'
+                                        }`}>
+                                            {formatDuration(flight.duration)}
+                                        </p>
+                                    </div>
                                 </div>
                             </motion.div>
 

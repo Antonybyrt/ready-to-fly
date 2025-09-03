@@ -9,6 +9,7 @@ import { IAirportId } from '@/models/airport.model';
 import AddAirport from '@/components/modals/AddAirport';
 import RemoveAirportModal from '@/components/modals/RemoveAirport';
 import ReturnFlightModal from '@/components/modals/ReturnFlight';
+import { CalendarPromptModal } from '@/components/modals/CalendarPrompt';
 import auth from '@/services/auth.service';
 import { IUser } from '@/models/user.model';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,6 +42,8 @@ const NewFlight = () => {
     const [airportToDelete, setAirportToDelete] = useState('');
     const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showCalendarPrompt, setShowCalendarPrompt] = useState(false);
+    const [createdFlight, setCreatedFlight] = useState<any>(null);
     const router = useRouter();
     const [user, setUser] = useState<IUser | null>(); 
     const { isDarkMode } = useTheme();
@@ -85,9 +88,8 @@ const NewFlight = () => {
 
         const endDate = new Date(startDateTime);
         const hours = Math.floor(durationValue);
-        const minutes = Math.round((durationValue - hours) * 60);
-        endDate.setHours(startDateTime.getHours() + hours);
-        endDate.setMinutes(startDateTime.getMinutes() + minutes);
+        const minutes = Math.round((durationValue - hours) * 100);
+        endDate.setTime(startDateTime.getTime() + (hours * 60 + minutes) * 60 * 1000);
     
         const flightData = {
             departure_id: Number(departureId),
@@ -102,7 +104,16 @@ const NewFlight = () => {
             const result = await FlightService.createFlight(flightData);
             if (result.errorCode === ServiceErrorCode.success) {
                 ErrorService.successMessage('Flight created!', '');
-                router.push('/dashboard');
+                
+                const departureAirport = airports.find(a => a.id === Number(departureId));
+                const arrivalAirport = airports.find(a => a.id === Number(arrivalId));
+                
+                setCreatedFlight({
+                    ...flightData,
+                    departureAirport,
+                    arrivalAirport
+                });
+                setShowCalendarPrompt(true);
             }
         } catch (err) {
             ErrorService.errorMessage('Creation failed', '' + err);
@@ -164,9 +175,8 @@ const NewFlight = () => {
 
         const endDate = new Date(startDateTime);
         const hours = Math.floor(durationValue);
-        const minutes = Math.round((durationValue - hours) * 60);
-        endDate.setHours(startDateTime.getHours() + hours);
-        endDate.setMinutes(startDateTime.getMinutes() + minutes);
+        const minutes = Math.round((durationValue - hours) * 100);
+        endDate.setTime(startDateTime.getTime() + (hours * 60 + minutes) * 60 * 1000);
 
         flightData.end_date = endDate;
         flightData.duration = durationValue;
@@ -179,6 +189,75 @@ const NewFlight = () => {
             }
         } catch (err) {
             ErrorService.errorMessage('Failed to create return flight', '' + err);
+        }
+    };
+
+    const generateAppleCalendarLink = (flight: any, departureAirport: any, arrivalAirport: any) => {
+        const startDate = new Date(flight.start_date);
+        const endDate = new Date(flight.end_date);
+        
+        const formatDate = (date: Date) => {
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+        
+        const escapeText = (text: string) => {
+            return text
+                .replace(/[\\;,]/g, '\\$&')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        };
+        
+        const title = escapeText(`Flight: ${departureAirport?.short_form} → ${arrivalAirport?.short_form}`);
+        const description = escapeText(`Flight from ${departureAirport?.name} to ${arrivalAirport?.name}\nDuration: ${formatDuration(flight.duration)}`);
+        const location = escapeText(`${departureAirport?.name} → ${arrivalAirport?.name}`);
+        const startTime = formatDate(startDate);
+        const endTime = formatDate(endDate);
+        
+        const icsContent = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Ready to Fly//Flight Calendar//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            `UID:${Date.now()}@readytofly.com`,
+            `DTSTAMP:${formatDate(new Date())}`,
+            `DTSTART:${startTime}`,
+            `DTEND:${endTime}`,
+            `SUMMARY:${title}`,
+            `DESCRIPTION:${description}`,
+            `LOCATION:${location}`,
+            'STATUS:CONFIRMED',
+            'SEQUENCE:0',
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
+        
+        return icsContent;
+    };
+
+    const downloadCalendarFile = (flight: any, departureAirport: any, arrivalAirport: any) => {
+        const icsContent = generateAppleCalendarLink(flight, departureAirport, arrivalAirport);
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `flight-${departureAirport?.short_form}-${arrivalAirport?.short_form}.ics`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+    const formatDuration = (duration: number) => {
+        const hours = Math.floor(duration);
+        const minutes = Math.round((duration - hours) * 100);
+        
+        if (hours === 0) {
+            return `${minutes}m`;
+        } else if (minutes === 0) {
+            return `${hours}h00`;
+        } else {
+            return `${hours}h${minutes.toString().padStart(2, '0')}`;
         }
     };
 
@@ -510,6 +589,27 @@ const NewFlight = () => {
                                 setAirportToDelete={setAirportToDelete}
                                 handleDeleteAirport={handleDeleteAirport}
                                 closeModal={() => setIsDeleteModalOpen(false)}
+                            />
+                        )}
+
+                        {/* Calendar Prompt Modal */}
+                        {showCalendarPrompt && createdFlight && (
+                            <CalendarPromptModal
+                                flight={createdFlight}
+                                onClose={() => setShowCalendarPrompt(false)}
+                                onAddToCalendar={() => {
+                                    downloadCalendarFile(
+                                        createdFlight,
+                                        createdFlight.departureAirport,
+                                        createdFlight.arrivalAirport
+                                    );
+                                    setShowCalendarPrompt(false);
+                                    router.push('/dashboard');
+                                }}
+                                onSkip={() => {
+                                    setShowCalendarPrompt(false);
+                                    router.push('/dashboard');
+                                }}
                             />
                         )}
                     </motion.div>
