@@ -223,12 +223,12 @@ const MyCalendar = () => {
                                     ? 'bg-gray-800/90 backdrop-blur-sm border-gray-600' 
                                     : 'bg-white/95 backdrop-blur-sm border-gray-300'
                             }`}>
-                                <CardHeader>
-                                    <div className="flex items-center justify-between">
+                                <CardHeader className="p-4 sm:p-6">
+                                    <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
                                         <Button
                                             variant="outline"
                                             onClick={previousMonth}
-                                            className={`${
+                                            className={`w-full sm:w-auto ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 text-gray-300 hover:bg-gray-800' 
                                                     : 'border-gray-300 text-gray-700 hover:bg-gray-100'
@@ -238,7 +238,7 @@ const MyCalendar = () => {
                                             Previous
                                         </Button>
                                         
-                                        <CardTitle className={`text-2xl font-bold ${
+                                        <CardTitle className={`text-xl sm:text-2xl font-bold text-center ${
                                             isDarkMode ? 'text-white' : 'text-gray-900'
                                         }`}>
                                             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
@@ -247,7 +247,7 @@ const MyCalendar = () => {
                                         <Button
                                             variant="outline"
                                             onClick={nextMonth}
-                                            className={`${
+                                            className={`w-full sm:w-auto ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 text-gray-300 hover:bg-gray-800' 
                                                     : 'border-gray-300 text-gray-700 hover:bg-gray-100'
@@ -272,13 +272,13 @@ const MyCalendar = () => {
                                     ? 'bg-gray-800/90 backdrop-blur-sm border-gray-600' 
                                     : 'bg-white/95 backdrop-blur-sm border-gray-300'
                             }`}>
-                                <CardContent className="p-6">
+                                <CardContent className="p-3 sm:p-6">
                                     {/* Day Headers */}
-                                    <div className="grid grid-cols-7 gap-2 mb-4">
+                                    <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3 sm:mb-4">
                                         {dayNames.map((day, index) => (
                                             <div
                                                 key={index}
-                                                className={`text-center font-semibold py-2 ${
+                                                className={`text-center font-semibold py-2 text-xs sm:text-sm ${
                                                     isDarkMode ? 'text-gray-300' : 'text-gray-700'
                                                 }`}
                                             >
@@ -288,10 +288,10 @@ const MyCalendar = () => {
                                     </div>
 
                                     {/* Calendar Days */}
-                                    <div className="grid grid-cols-7 gap-2">
+                                    <div className="grid grid-cols-7 gap-1 sm:gap-2">
                                         {/* Empty cells for days before the first day of the month */}
                                         {Array.from({ length: startingDayOfWeek }, (_, index) => (
-                                            <div key={`empty-${index}`} className="h-32"></div>
+                                            <div key={`empty-${index}`} className="h-20 sm:h-32"></div>
                                         ))}
 
                                         {/* Days of the month */}
@@ -304,7 +304,7 @@ const MyCalendar = () => {
                                             return (
                                                 <div
                                                     key={dayNumber}
-                                                    className={`h-32 border rounded-lg p-2 transition-all duration-200 ${
+                                                    className={`h-20 sm:h-32 border rounded-lg p-1 sm:p-2 transition-all duration-200 ${
                                                         isToday
                                                             ? isDarkMode
                                                                 ? 'bg-pink-500/20 border-pink-500'
@@ -314,7 +314,7 @@ const MyCalendar = () => {
                                                                 : 'border-gray-200 hover:border-gray-300'
                                                     }`}
                                                 >
-                                                    <div className={`text-sm font-semibold mb-1 ${
+                                                    <div className={`text-xs sm:text-sm font-semibold mb-1 ${
                                                         isToday
                                                             ? isDarkMode ? 'text-pink-300' : 'text-pink-700'
                                                             : isDarkMode ? 'text-white' : 'text-gray-900'
@@ -323,33 +323,33 @@ const MyCalendar = () => {
                                                     </div>
                                                     
                                                     {/* Flights for this day */}
-                                                     <div className="space-y-1">
-                                                         {dayFlights.map((flight, flightIndex) => {
-                                                             const status = getFlightStatus(flight);
-                                                             return (
-                                                                 <div
-                                                                     key={flight.id}
-                                                                     onClick={() => handleFlightClick(flight)}
-                                                                     className={`text-xs p-1 rounded cursor-pointer transition-all duration-200 ${
-                                                                         isDarkMode 
-                                                                             ? 'bg-gray-700/80 hover:bg-pink-500/30 hover:border-pink-400/50 border border-transparent' 
-                                                                             : 'bg-gray-100 hover:bg-pink-100 hover:border-pink-300/50 border border-transparent'
-                                                                     }`}
-                                                                     title={`${flight.departureAirport?.short_form} → ${flight.arrivalAirport?.short_form} - ${formatTime(new Date(flight.start_date))}`}
-                                                                 >
-                                                                     <div className="flex items-center space-x-1">
-                                                                         <Plane className="w-2 h-2" />
-                                                                         <span className="truncate">
-                                                                             {flight.departureAirport?.short_form} → {flight.arrivalAirport?.short_form}
-                                                                         </span>
-                                                                     </div>
-                                                                     <div className="text-xs opacity-75">
-                                                                         {formatTime(new Date(flight.start_date))}
-                                                                     </div>
-                                                                 </div>
-                                                             );
-                                                         })}
-                                                     </div>
+                                                    <div className="space-y-0.5 sm:space-y-1">
+                                                        {dayFlights.map((flight, flightIndex) => {
+                                                            const status = getFlightStatus(flight);
+                                                            return (
+                                                                <div
+                                                                    key={flight.id}
+                                                                    onClick={() => handleFlightClick(flight)}
+                                                                    className={`text-xs p-0.5 sm:p-1 rounded cursor-pointer transition-all duration-200 ${
+                                                                        isDarkMode 
+                                                                            ? 'bg-gray-700/80 hover:bg-pink-500/30 hover:border-pink-400/50 border border-transparent' 
+                                                                            : 'bg-gray-100 hover:bg-pink-100 hover:border-pink-300/50 border border-transparent'
+                                                                    }`}
+                                                                    title={`${flight.departureAirport?.short_form} → ${flight.arrivalAirport?.short_form} - ${formatTime(new Date(flight.start_date))}`}
+                                                                >
+                                                                    <div className="flex items-center space-x-0.5 sm:space-x-1">
+                                                                        <Plane className="w-1.5 h-1.5 sm:w-2 sm:h-2" />
+                                                                        <span className="truncate text-xs">
+                                                                            {flight.departureAirport?.short_form} → {flight.arrivalAirport?.short_form}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="text-xs opacity-75 hidden sm:block">
+                                                                        {formatTime(new Date(flight.start_date))}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
                                                 </div>
                                             );
                                         })}
