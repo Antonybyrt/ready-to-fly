@@ -37,7 +37,6 @@ const Dashboard = () => {
   const [totalHoursInAir, setTotalHoursInAir] = useState<number>(0);
   const [user, setUser] = useState<IUser | null>(); 
   const [flights, setFlights] = useState<IFlight[]>([]);
-  const [availableYears, setAvailableYears] = useState<number[]>([]);
   const { isDarkMode } = useTheme();
     const router = useRouter();
 
@@ -82,14 +81,6 @@ const Dashboard = () => {
       if (flightsResult.errorCode === ServiceErrorCode.success) {
         const flights = flightsResult.result as IFlight[];
         setFlights(flights);
-
-        const years = [...new Set(flights.map(flight => new Date(flight.start_date).getFullYear()))];
-        years.sort((a, b) => b - a);
-        setAvailableYears(years);
-
-        if (years.length > 0 && !years.includes(selectedYear)) {
-          setSelectedYear(years[0]);
-        }
 
         const upcomingFlights = flights.filter(flight => new Date(flight.start_date) > new Date());
         if (upcomingFlights.length > 0) {
@@ -320,13 +311,9 @@ const Dashboard = () => {
                               : 'bg-white border-gray-300 text-gray-900'
                           }`}
                         >
-                          {availableYears.length > 0 ? (
-                            availableYears.map(year => (
-                              <option key={year} value={year}>{year}</option>
-                            ))
-                          ) : (
-                            <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
-                          )}
+                          {Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - 1) + i).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
                         </select>
                         </div>
                     </div>

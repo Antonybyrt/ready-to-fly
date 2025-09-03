@@ -9,7 +9,6 @@ import { IAirportId } from '@/models/airport.model';
 import AddAirport from '@/components/modals/AddAirport';
 import RemoveAirportModal from '@/components/modals/RemoveAirport';
 import ReturnFlightModal from '@/components/modals/ReturnFlight';
-import { CalendarPromptModal } from '@/components/modals/CalendarPrompt';
 import auth from '@/services/auth.service';
 import { IUser } from '@/models/user.model';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,8 +41,6 @@ const NewFlight = () => {
     const [airportToDelete, setAirportToDelete] = useState('');
     const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [showCalendarPrompt, setShowCalendarPrompt] = useState(false);
-    const [createdFlight, setCreatedFlight] = useState<any>(null);
     const router = useRouter();
     const [user, setUser] = useState<IUser | null>(); 
     const { isDarkMode } = useTheme();
@@ -104,16 +101,7 @@ const NewFlight = () => {
             const result = await FlightService.createFlight(flightData);
             if (result.errorCode === ServiceErrorCode.success) {
                 ErrorService.successMessage('Flight created!', '');
-                
-                const departureAirport = airports.find(a => a.id === Number(departureId));
-                const arrivalAirport = airports.find(a => a.id === Number(arrivalId));
-                
-                setCreatedFlight({
-                    ...flightData,
-                    departureAirport,
-                    arrivalAirport
-                });
-                setShowCalendarPrompt(true);
+                router.push('/dashboard');
             }
         } catch (err) {
             ErrorService.errorMessage('Creation failed', '' + err);
@@ -189,37 +177,6 @@ const NewFlight = () => {
             }
         } catch (err) {
             ErrorService.errorMessage('Failed to create return flight', '' + err);
-        }
-    };
-
-    const addToGoogleCalendar = (flight: any, departureAirport: any, arrivalAirport: any) => {
-        const startDate = new Date(flight.start_date);
-        const endDate = new Date(flight.end_date);
-        
-        const formatDateForGoogle = (date: Date) => {
-            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-        };
-        
-        const title = encodeURIComponent(`Flight: ${departureAirport?.short_form} → ${arrivalAirport?.short_form}`);
-        const description = encodeURIComponent(`Flight from ${departureAirport?.name} to ${arrivalAirport?.name}\nDuration: ${formatDuration(flight.duration)}`);
-        const location = encodeURIComponent(`${departureAirport?.name} → ${arrivalAirport?.name}`);
-        const startTime = formatDateForGoogle(startDate);
-        const endTime = formatDateForGoogle(endDate);
-        
-        const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${description}&location=${location}&dates=${startTime}/${endTime}`;
-        
-        window.open(googleCalendarUrl, '_blank');
-    };
-    const formatDuration = (duration: number) => {
-        const hours = Math.floor(duration);
-        const minutes = Math.round((duration - hours) * 100);
-        
-        if (hours === 0) {
-            return `${minutes}m`;
-        } else if (minutes === 0) {
-            return `${hours}h00`;
-        } else {
-            return `${hours}h${minutes.toString().padStart(2, '0')}`;
         }
     };
 
@@ -551,27 +508,6 @@ const NewFlight = () => {
                                 setAirportToDelete={setAirportToDelete}
                                 handleDeleteAirport={handleDeleteAirport}
                                 closeModal={() => setIsDeleteModalOpen(false)}
-                            />
-                        )}
-
-                        {/* Calendar Prompt Modal */}
-                        {showCalendarPrompt && createdFlight && (
-                            <CalendarPromptModal
-                                flight={createdFlight}
-                                onClose={() => setShowCalendarPrompt(false)}
-                                onAddToCalendar={() => {
-                                    addToGoogleCalendar(
-                                        createdFlight,
-                                        createdFlight.departureAirport,
-                                        createdFlight.arrivalAirport
-                                    );
-                                    setShowCalendarPrompt(false);
-                                    router.push('/dashboard');
-                                }}
-                                onSkip={() => {
-                                    setShowCalendarPrompt(false);
-                                    router.push('/dashboard');
-                                }}
                             />
                         )}
                     </motion.div>
