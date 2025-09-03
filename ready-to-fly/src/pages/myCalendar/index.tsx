@@ -84,18 +84,20 @@ const MyCalendar = () => {
     };
 
     const formatDate = (date: Date) => {
-        return date.toLocaleDateString('en-US', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        const year = dateObj.getUTCFullYear();
+        const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getUTCDate()).padStart(2, '0');
+        
+        return `${month}/${day}/${year}`;
     };
 
     const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        });
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        const hours = String(dateObj.getUTCHours()).padStart(2, '0');
+        const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
+        
+        return `${hours}:${minutes}`;
     };
 
     const formatDuration = (duration: number) => {
