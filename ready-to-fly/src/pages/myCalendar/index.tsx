@@ -66,12 +66,13 @@ const MyCalendar = () => {
     }, [user]);
 
     const getDaysInMonth = (date: Date) => {
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const daysInMonth = lastDay.getDate();
-        const startingDayOfWeek = firstDay.getDay();
+        const year = date.getUTCFullYear();
+        const month = date.getUTCMonth();
+
+        const firstDay = new Date(Date.UTC(year, month, 1));
+        const lastDay = new Date(Date.UTC(year, month + 1, 0));
+        const daysInMonth = lastDay.getUTCDate();
+        const startingDayOfWeek = firstDay.getUTCDay();
         
         return { daysInMonth, startingDayOfWeek };
     };
@@ -299,9 +300,8 @@ const MyCalendar = () => {
                                         {/* Days of the month */}
                                         {Array.from({ length: daysInMonth }, (_, index) => {
                                             const dayNumber = index + 1;
-                                            const currentDayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
+                                            const currentDayDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), dayNumber));
                                             const dayFlights = getFlightsForDate(currentDayDate);
-                                            // Compare UTC dates for today highlighting
                                             const today = new Date();
                                             const todayUTCDate = new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
                                             const currentDayUTCDate = new Date(currentDayDate.getUTCFullYear(), currentDayDate.getUTCMonth(), currentDayDate.getUTCDate());
@@ -370,10 +370,10 @@ const MyCalendar = () => {
                                                                 }`}
                                                                 title={`${dayFlights.length - 2} more flights on this day`}
                                                             >
-                                                                <div className="flex items-center justify-center space-x-0.5 sm:space-x-1">
-                                                                    <Plane className="w-1.5 h-1.5 sm:w-2 sm:h-2" />
-                                                                    <span className="text-xs font-medium">
-                                                                        +{dayFlights.length - 2} more
+                                                                <div className="flex items-center justify-center">
+                                                                    <Plane className="w-1.5 h-1.5 sm:w-2 sm:h-2 mr-0.5" />
+                                                                    <span className="text-xs font-medium truncate">
+                                                                        +{dayFlights.length - 2}
                                                                     </span>
                                                                 </div>
                                                             </div>
