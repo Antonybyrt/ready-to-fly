@@ -126,8 +126,8 @@ const MyFlights = () => {
                 const flightDate = new Date(flight.start_date);
                 const isYearMatch = selectedYear ? flightDate.getFullYear() === selectedYear : true;
                 const isMonthMatch = selectedMonth ? flightDate.getMonth() + 1 === selectedMonth : true;
-                const isDepartureMatch = flight.departureAirport?.name.toLowerCase().includes(searchDeparture.toLowerCase());
-                const isArrivalMatch = flight.arrivalAirport?.name.toLowerCase().includes(searchArrival.toLowerCase());
+                const isDepartureMatch = flight.departureAirport?.short_form.toLowerCase().includes(searchDeparture.toLowerCase());
+                const isArrivalMatch = flight.arrivalAirport?.short_form.toLowerCase().includes(searchArrival.toLowerCase());
 
                 const flightDateString = flightDate.toISOString().split('T')[0];
                 const isDateMatch = searchDate ? flightDateString === searchDate : true;

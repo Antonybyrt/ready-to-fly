@@ -330,7 +330,7 @@ const MyCalendar = () => {
                                                     
                                                     {/* Flights for this day */}
                                                     <div className="space-y-0.5 sm:space-y-1">
-                                                        {dayFlights.map((flight, flightIndex) => {
+                                                        {dayFlights.slice(0, 2).map((flight, flightIndex) => {
                                                             const status = getFlightStatus(flight);
                                                             return (
                                                                 <div
@@ -355,6 +355,29 @@ const MyCalendar = () => {
                                                                 </div>
                                                             );
                                                         })}
+                                                        {dayFlights.length > 2 && (
+                                                            <div
+                                                                onClick={() => {
+                                                                    const allFlights = dayFlights;
+                                                                    if (allFlights.length > 0) {
+                                                                        handleFlightClick(allFlights[0]);
+                                                                    }
+                                                                }}
+                                                                className={`text-xs p-0.5 sm:p-1 rounded cursor-pointer transition-all duration-200 ${
+                                                                    isDarkMode 
+                                                                        ? 'bg-pink-500/20 hover:bg-pink-500/40 border border-pink-400/50' 
+                                                                        : 'bg-pink-100 hover:bg-pink-200 border border-pink-300/50'
+                                                                }`}
+                                                                title={`${dayFlights.length - 2} more flights on this day`}
+                                                            >
+                                                                <div className="flex items-center justify-center space-x-0.5 sm:space-x-1">
+                                                                    <Plane className="w-1.5 h-1.5 sm:w-2 sm:h-2" />
+                                                                    <span className="text-xs font-medium">
+                                                                        +{dayFlights.length - 2} more
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );
