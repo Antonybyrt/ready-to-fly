@@ -79,7 +79,9 @@ const MyCalendar = () => {
     const getFlightsForDate = (date: Date) => {
         return flights.filter(flight => {
             const flightDate = new Date(flight.start_date);
-            return flightDate.toDateString() === date.toDateString();
+            const flightUTCDate = new Date(flightDate.getUTCFullYear(), flightDate.getUTCMonth(), flightDate.getUTCDate());
+            const compareUTCDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+            return flightUTCDate.getTime() === compareUTCDate.getTime();
         });
     };
 
@@ -299,7 +301,11 @@ const MyCalendar = () => {
                                             const dayNumber = index + 1;
                                             const currentDayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
                                             const dayFlights = getFlightsForDate(currentDayDate);
-                                            const isToday = currentDayDate.toDateString() === new Date().toDateString();
+                                            // Compare UTC dates for today highlighting
+                                            const today = new Date();
+                                            const todayUTCDate = new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+                                            const currentDayUTCDate = new Date(currentDayDate.getUTCFullYear(), currentDayDate.getUTCMonth(), currentDayDate.getUTCDate());
+                                            const isToday = currentDayUTCDate.getTime() === todayUTCDate.getTime();
 
                                             return (
                                                 <div
